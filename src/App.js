@@ -1,25 +1,225 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import Collections from "./components/Collections";
+import CollectionView from "./components/CollectionView";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const DATA = [
+    {
+        name: "col1",
+        cover: "",
+        content: [
+            {
+                type: "link",
+                title: "dddd",
+                cover: "",
+                href: "https://github.com/",
+            },
+        ],
+    },
+    {
+        name: "col2",
+        cover: "",
+        content: [],
+    },
+    {
+        name: "col3",
+        cover: "",
+        content: [
+            {
+                type: "link",
+                title: "dddd",
+                cover: "",
+                href: "https://github.com/",
+            },
+            {
+                type: "link",
+                title: "dddd",
+                cover: "",
+                href: "https://github.com/",
+            },
+            {
+                type: "link",
+                title: "dddd",
+                cover: "",
+                href: "https://github.com/",
+            },
+            {
+                type: "link",
+                title: "dddd",
+                cover: "",
+                href: "https://github.com/",
+            },
+        ],
+    },
+    {
+        name: "col3",
+        cover: "",
+        content: [
+            {
+                type: "link",
+                title: "dddd",
+                cover: "",
+                href: "https://github.com/",
+            },
+            {
+                type: "link",
+                title: "dddd",
+                cover: "",
+                href: "https://github.com/",
+            },
+            {
+                type: "link",
+                title: "dddd",
+                cover: "",
+                href: "https://github.com/",
+            },
+            {
+                type: "link",
+                title: "dddd",
+                cover: "",
+                href: "https://github.com/",
+            },
+        ],
+    },
+    {
+        name: "col3",
+        cover: "",
+        content: [
+            {
+                type: "link",
+                title: "dddd",
+                cover: "",
+                href: "https://github.com/",
+            },
+            {
+                type: "link",
+                title: "dddd",
+                cover: "",
+                href: "https://github.com/",
+            },
+            {
+                type: "link",
+                title: "dddd",
+                cover: "",
+                href: "https://github.com/",
+            },
+            {
+                type: "link",
+                title: "dddd",
+                cover: "",
+                href: "https://github.com/",
+            },
+        ],
+    },
+    {
+        name: "col3",
+        cover: "",
+        content: [
+            {
+                type: "link",
+                title: "dddd",
+                cover: "",
+                href: "https://github.com/",
+            },
+            {
+                type: "link",
+                title: "dddd",
+                cover: "",
+                href: "https://github.com/",
+            },
+            {
+                type: "link",
+                title: "dddd",
+                cover: "",
+                href: "https://github.com/",
+            },
+            {
+                type: "link",
+                title: "dddd",
+                cover: "",
+                href: "https://github.com/",
+            },
+        ],
+    },
+    {
+        name: "col3",
+        cover: "",
+        content: [
+            {
+                type: "link",
+                title: "dddd",
+                cover: "",
+                href: "https://github.com/",
+            },
+            {
+                type: "link",
+                title: "dddd",
+                cover: "",
+                href: "https://github.com/",
+            },
+            {
+                type: "link",
+                title: "dddd",
+                cover: "",
+                href: "https://github.com/",
+            },
+            {
+                type: "link",
+                title: "dddd",
+                cover: "",
+                href: "https://github.com/",
+            },
+        ],
+    },
+    {
+        name: "col4",
+        cover: "",
+        content: [
+            {
+                type: "link",
+                title: "dddd",
+                cover: "",
+                href: "https://github.com/",
+            },
+            {
+                type: "link",
+                title: "dddd",
+                cover: "",
+                href: "https://github.com/",
+            },
+            {
+                type: "link",
+                title: "dddd",
+                cover: "",
+                href: "https://github.com/",
+            },
+            {
+                type: "link",
+                title: "dddd",
+                cover: "",
+                href: "https://github.com/",
+            },
+        ],
+    },
+];
+
+const App = () => {
+    const [data, dataUpdater] = useState(DATA);
+    const [currentCollection, currentCollectionUpdater] = useState(null);
+    return (
+        <>
+            {currentCollection === null ? (
+                <Collections
+                    collectionData={data}
+                    currentCollectionUpdater={currentCollectionUpdater}
+                />
+            ) : (
+                <CollectionView
+                    collection={data[currentCollection]}
+                    currentCollectionUpdater={currentCollectionUpdater}
+                />
+            )}
+        </>
+    );
+};
 
 export default App;
