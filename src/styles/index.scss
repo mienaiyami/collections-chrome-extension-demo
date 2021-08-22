@@ -28,6 +28,18 @@
     --color-on-surface: #ffffff;
     --color-on-error: #000000;
 }
+::-webkit-scrollbar {
+    width: 10px;
+}
+::-webkit-scrollbar-track {
+    background: none;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--color-overlay2);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-overlay3);
+}
 body {
     position: relative;
     font-family: "Roboto", sans-serif;
@@ -39,6 +51,7 @@ body {
     box-shadow: 0 0 1px 0 var(--color-on-background);
     cursor: default;
     overflow: hidden;
+    font-size: 17px;
     button {
         color: inherit;
         background: none;
@@ -53,6 +66,13 @@ body {
         &:active {
             background-color: var(--color-overlay5);
         }
+    }
+    input[type="text"] {
+        background: var(--color-overlay5);
+        border: none;
+        color: inherit;
+        font-size: inherit;
+        font-family: inherit;
     }
     #app {
         position: relative;
@@ -81,7 +101,18 @@ body {
             width: 100%;
             height: 100%;
             overflow-y: auto;
-            #collection {
+            .createNew {
+                width: 100%;
+                height: 50px;
+                display: flex;
+                flex-direction: row;
+                gap: 10px;
+                > button {
+                    width: 50%;
+                    height: 100%;
+                }
+            }
+            #collections {
                 width: 100%;
                 position: relative;
                 display: flex;

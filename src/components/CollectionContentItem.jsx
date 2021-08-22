@@ -2,7 +2,18 @@ import React from "react";
 
 const CollectionContentItem = ({ title, href, cover }) => {
     return (
-        <a className="collectionContentItem" href={href} tabIndex="0">
+        <a
+            className="collectionContentItem"
+            href={href}
+            tabIndex="0"
+            onClick={(e) => {
+                e.preventDefault();
+                /* eslint-disable */
+                chrome.tabs.create({ url: href });
+                /* eslint-enable */
+            }}
+            draggable
+        >
             <div className="cover">
                 <img src={cover || ""} alt="Img" />
             </div>

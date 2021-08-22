@@ -30,6 +30,22 @@
   --color-on-error: #000000;
 }
 
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: none;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-overlay2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-overlay3);
+}
+
 body {
   position: relative;
   font-family: "Roboto", sans-serif;
@@ -42,6 +58,7 @@ body {
           box-shadow: 0 0 1px 0 var(--color-on-background);
   cursor: default;
   overflow: hidden;
+  font-size: 17px;
 }
 
 body button {
@@ -60,6 +77,14 @@ body button:hover {
 
 body button:active {
   background-color: var(--color-overlay5);
+}
+
+body input[type="text"] {
+  background: var(--color-overlay5);
+  border: none;
+  color: inherit;
+  font-size: inherit;
+  font-family: inherit;
 }
 
 body #app {
@@ -108,7 +133,25 @@ body #app #main {
   overflow-y: auto;
 }
 
-body #app #main #collection {
+body #app #main .createNew {
+  width: 100%;
+  height: 50px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  gap: 10px;
+}
+
+body #app #main .createNew > button {
+  width: 50%;
+  height: 100%;
+}
+
+body #app #main #collections {
   width: 100%;
   position: relative;
   display: -webkit-box;
@@ -126,7 +169,7 @@ body #app #main #collection {
   font-size: 17px;
 }
 
-body #app #main #collection .collectionItem {
+body #app #main #collections .collectionItem {
   width: 100%;
   height: 70px;
   background-color: var(--color-overlay1);
@@ -145,15 +188,15 @@ body #app #main #collection .collectionItem {
   padding: 5px;
 }
 
-body #app #main #collection .collectionItem:hover {
+body #app #main #collections .collectionItem:hover {
   background-color: var(--color-overlay2);
 }
 
-body #app #main #collection .collectionItem:active {
+body #app #main #collections .collectionItem:active {
   background-color: var(--color-overlay5);
 }
 
-body #app #main #collection .collectionItem .cover {
+body #app #main #collections .collectionItem .cover {
   height: 100%;
   border-radius: 3px;
   width: 100%;
@@ -162,7 +205,7 @@ body #app #main #collection .collectionItem .cover {
   background-color: var(--color-overlay3);
 }
 
-body #app #main #collection .collectionItem .info {
+body #app #main #collections .collectionItem .info {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -175,7 +218,7 @@ body #app #main #collection .collectionItem .info {
           align-items: left;
 }
 
-body #app #main #collection .collectionItem .info .total {
+body #app #main #collections .collectionItem .info .total {
   color: var(--color-overlay6);
   font-size: 12px;
 }

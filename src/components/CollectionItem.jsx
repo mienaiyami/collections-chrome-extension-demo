@@ -12,6 +12,7 @@ const CollectionItem = ({
             className="collectionItem"
             tabIndex="0"
             onClick={() => openCollection(indexNumber)}
+            draggable
         >
             <div className="cover">
                 <img src={cover || ""} alt="Img" />
