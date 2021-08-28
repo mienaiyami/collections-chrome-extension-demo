@@ -50,12 +50,6 @@ const DAT = [
                 cover: "",
                 href: "https://github.com/",
             },
-        ],
-    },
-    {
-        name: "col3",
-        cover: "",
-        content: [
             {
                 type: "link",
                 title: "dddd",
@@ -80,12 +74,6 @@ const DAT = [
                 cover: "",
                 href: "https://github.com/",
             },
-        ],
-    },
-    {
-        name: "col3",
-        cover: "",
-        content: [
             {
                 type: "link",
                 title: "dddd",
@@ -110,42 +98,6 @@ const DAT = [
                 cover: "",
                 href: "https://github.com/",
             },
-        ],
-    },
-    {
-        name: "col3",
-        cover: "",
-        content: [
-            {
-                type: "link",
-                title: "dddd",
-                cover: "",
-                href: "https://github.com/",
-            },
-            {
-                type: "link",
-                title: "dddd",
-                cover: "",
-                href: "https://github.com/",
-            },
-            {
-                type: "link",
-                title: "dddd",
-                cover: "",
-                href: "https://github.com/",
-            },
-            {
-                type: "link",
-                title: "dddd",
-                cover: "",
-                href: "https://github.com/",
-            },
-        ],
-    },
-    {
-        name: "col3",
-        cover: "",
-        content: [
             {
                 type: "link",
                 title: "dddd",
@@ -204,21 +156,25 @@ const DAT = [
     },
 ];
 
-let DATA;
-if (isDev) DATA = DAT;
-/* eslint-disable */ else {
-    chrome.storage.sync.get("collections", ({ collections }) => {
-        DATA = collections;
-        console.log("data", DATA);
-    });
-    if (DATA === undefined) {
-        DATA = [];
-        chrome.storage.sync.set({ collections: DATA });
-    }
-}
-/* eslint-enable */
 const App = () => {
-    const [data, dataUpdater] = useState(DATA);
+    const [data, dataUpdater] = useState([]); /* eslint-disable */
+    useEffect(() => {
+        if (isDev) {
+            dataUpdater(DAT);
+        } else {
+            chrome.storage.sync.get("collections", ({ collections }) => {
+                console.log("d", collections);
+                if (collections === undefined) {
+                    dataUpdater([]);
+                    chrome.storage.sync.set({ collections: [] }, () => {
+                        console.log("yeee", data);
+                    });
+                } else dataUpdater(collections);
+                console.log("data1", data);
+            });
+        }
+    }, []);
+    /* eslint-enable */
     const [currentCollection, currentCollectionUpdater] = useState(null);
     const [newColMaking, newColMakingUpdater] = useState(false);
 
@@ -226,17 +182,23 @@ const App = () => {
         newColMakingUpdater(true);
     };
     const addToCollections = ({ name, content }) => {
+        let occ = 0;
+        let name1 = name;
+        console.log(name1);
+        while (data.map((e) => e.name).includes(name1)) {
+            occ++;
+            name1 = name + "_" + occ;
+            console.log(name1);
+            if (occ > 100) break;
+        }
+        if (occ > 100) return;
         const newData = {
-            name,
+            name: name1,
             cover: "",
             content,
         };
         const updatedData = [newData, ...data];
         dataUpdater(updatedData);
-        //eslint-disable-next-line
-        chrome.storage.sync.get("collections", ({ collections }) => {
-            console.log("ddd", collections);
-        });
     };
     useEffect(() => {
         if (!isDev) {
@@ -248,7 +210,89 @@ const App = () => {
             /* eslint-enable */
         }
     }, [data]);
-    const initNewCollection2 = () => {};
+    const addLinkToCollection = ({ colIndex, link, title, cover }) => {
+        let newContentItem = {
+            type: "link",
+            title: title || "title",
+            cover: cover || "",
+            href: link,
+        };
+        console.log(newContentItem);
+        data[colIndex].content.unshift(newContentItem);
+        dataUpdater([...data]);
+    };
+    const removeCollections = (indexes) => {
+        // data.splice(index, 1);
+        if (data.length < Math.max(...indexes)) return;
+        let newData = [...data].filter((e, i) => {
+            console.log(indexes.includes(i), indexes, i);
+            return !indexes.includes(i);
+        });
+        console.log(newData);
+        dataUpdater(newData);
+    };
+    const removeLinkFromCollection = (colIndex, indexes) => {
+        if (data.length < colIndex) return;
+        if (data[colIndex].content.length < Math.max(...indexes)) return;
+        console.log(colIndex, indexes);
+        let newData = [...data];
+        newData[colIndex].content = newData[colIndex].content.filter((e, i) => {
+            console.log(indexes.includes(i), indexes, i);
+            return !indexes.includes(i);
+        });
+        console.log(newData);
+        dataUpdater(newData);
+    };
+    const initNewCollection2 = () => {
+        let content = [];
+        //eslint-disable-next-line
+        chrome.tabs.query({ currentWindow: true }).then((tabs) => {
+            console.log(tabs);
+            tabs.forEach((e) => {
+                content.push({
+                    type: "link",
+                    href: e.url,
+                    title: e.title,
+                    cover: e.favIconUrl,
+                });
+            });
+            data.unshift({
+                name: new Date().toUTCString(),
+                cover: "",
+                content,
+            });
+            dataUpdater([...data]);
+        });
+    };
+    const editCollection = (e) => {
+        if (e.type === "rename") {
+            // let index;
+            // let occ = 0;
+            // data.forEach((i, j) => {
+            //     if (i.name === e.oldName) {
+            //         index = j;
+            //         occ++;
+            //     }
+            // });
+            // if (occ > 1) return;
+            data[e.index].name = e.name;
+            dataUpdater(data);
+        }
+    };
+    const promptConfirm = (msg, callback) => {
+        const prompt = (
+            <div className="prompt">
+                <div className="msg">{msg}</div>
+                <div className="options">
+                    <button onClick={callback}>Confirm</button>
+                    <button onclick="this.parentElement.style.display='none'">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        );
+        document.getElementById("app").append();
+    };
     return (
         <>
             {newColMaking === true ? (
@@ -256,10 +300,15 @@ const App = () => {
                     isNew={true}
                     newColMakingUpdater={newColMakingUpdater}
                     collection={null}
-                    newCollection1={null}
-                    newCollection2={null}
+                    currentCollection={currentCollection}
+                    newCollection1={initNewCollection1}
+                    newCollection2={initNewCollection2}
+                    editCollection={editCollection}
                     currentCollectionUpdater={currentCollectionUpdater}
                     addToCollections={addToCollections}
+                    addLinkToCollection={addLinkToCollection}
+                    removeLinkFromCollection={removeLinkFromCollection}
+                    promptConfirm={promptConfirm}
                 />
             ) : currentCollection === null ? (
                 <Collections
@@ -267,15 +316,22 @@ const App = () => {
                     newCollection1={initNewCollection1}
                     newCollection2={initNewCollection2}
                     currentCollectionUpdater={currentCollectionUpdater}
+                    removeCollections={removeCollections}
+                    promptConfirm={promptConfirm}
                 />
             ) : (
                 <CollectionView
                     isNew={false}
                     newColMakingUpdater={newColMakingUpdater}
                     collection={data[currentCollection]}
+                    currentCollection={currentCollection}
                     newCollection1={initNewCollection1}
                     newCollection2={initNewCollection2}
+                    editCollection={editCollection}
                     currentCollectionUpdater={currentCollectionUpdater}
+                    addLinkToCollection={addLinkToCollection}
+                    removeLinkFromCollection={removeLinkFromCollection}
+                    promptConfirm={promptConfirm}
                 />
             )}
         </>

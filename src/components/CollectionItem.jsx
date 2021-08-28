@@ -1,17 +1,41 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
+import CheckBox from "./CheckBox";
 
 const CollectionItem = ({
     cover,
     name,
     total,
     openCollection,
+    removeCollections,
+    collectionContextMenu,
+    addToSelected,
+    removeFromSelected,
     indexNumber,
 }) => {
+    const checkboxRef = useRef(null);
+    const [checkboxState, checkboxStateUpdater] = useState(false);
+    useEffect(() => {
+        checkboxRef.current.addEventListener("change", (e) => {
+            let state = e.target.checked;
+            console.log("ddddddd");
+            checkboxStateUpdater(state);
+        });
+    }, []);
+    //try making change inside checkbox
+    useEffect(() => {
+        if (checkboxState === true) addToSelected(indexNumber);
+        if (checkboxState === false) removeFromSelected(indexNumber);
+    }, [checkboxState]);
     return (
         <div
             className="collectionItem"
+            data-checked={checkboxState}
             tabIndex="0"
             onClick={() => openCollection(indexNumber)}
+            onContextMenu={(e) => {
+                e.preventDefault();
+                collectionContextMenu(e, indexNumber);
+            }}
             draggable
         >
             <div className="cover">
@@ -28,14 +52,24 @@ const CollectionItem = ({
                 </span>
             </div>
             <div className="options">
-                <button
+                {/* <button
                     onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
+                        removeCollection(indexNumber);
                     }}
                 >
-                    ...
-                </button>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        height="24px"
+                        viewBox="0 0 24 24"
+                        width="24px"
+                        fill="#FFFFFF"
+                    >
+                        <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+                    </svg>
+                </button> */}
+                <CheckBox ref={checkboxRef} />
             </div>
         </div>
     );

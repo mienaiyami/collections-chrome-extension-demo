@@ -47,8 +47,7 @@ body {
     color: var(--color-on-background);
     width: 450px;
     height: 600px;
-    border-radius: 5px;
-    box-shadow: 0 0 1px 0 var(--color-on-background);
+    user-select: none;
     cursor: default;
     overflow: hidden;
     font-size: 17px;
@@ -59,6 +58,9 @@ body {
         border: none;
         padding: 5px;
         border-radius: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         cursor: pointer;
         &:hover {
             background-color: var(--color-overlay3);
@@ -68,11 +70,15 @@ body {
         }
     }
     input[type="text"] {
-        background: var(--color-overlay5);
+        background: none;
         border: none;
         color: inherit;
         font-size: inherit;
         font-family: inherit;
+        &:focus {
+            background-color: var(--color-overlay2);
+            outline: 1px solid var(--color-overlay4);
+        }
     }
     #app {
         position: relative;
@@ -81,6 +87,41 @@ body {
         display: flex;
         flex-direction: column;
         overflow: hidden;
+        .inputCheckboxCont {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            input[type="checkbox"] {
+                display: none;
+            }
+            &:hover .inputCheckbox {
+                border: 1px solid var(--color-overlay4);
+            }
+            .inputCheckbox {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 25px;
+                height: 25px;
+                border-radius: 2px;
+                background: none;
+                border: 1px solid var(--color-overlay2);
+                .check {
+                    display: none;
+                }
+            }
+            input[type="checkbox"]:checked ~ .inputCheckbox {
+                background: var(--color-primary);
+                .check {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+            }
+        }
         #topbar {
             width: 100%;
             position: relative;
@@ -94,6 +135,8 @@ body {
             }
             .options {
                 margin-left: auto;
+                display: flex;
+                flex-direction: row;
             }
         }
         #main {
@@ -101,18 +144,133 @@ body {
             width: 100%;
             height: 100%;
             overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            .contextMenu {
+                position: fixed;
+                left: 0;
+                top: 0;
+                background-color: var(--color-background);
+                padding: 10px 0;
+                flex-direction: column;
+                align-items: stretch;
+                border-radius: 2px;
+                font-size: 15px;
+                width: 200px;
+                z-index: 1000;
+                display: flex;
+                visibility: hidden;
+                &[data-state="opened"] {
+                    visibility: visible;
+                }
+                &[data-state="closed"] {
+                    visibility: hidden;
+                }
+                li {
+                    padding: 4px 10px;
+                    list-style: none;
+                    &:hover {
+                        background-color: var(--color-overlay2);
+                    }
+                    &:active {
+                        background-color: var(--color-overlay3);
+                    }
+                }
+            }
+            .deleteSelected {
+                width: 95%;
+                display: flex;
+                align-items: center;
+                padding: 5px;
+                margin: 3px 0;
+                flex-direction: row;
+                border-radius: 2px;
+                background-color: var(--color-overlay4);
+                .options {
+                    display: flex;
+                    flex-direction: row;
+                    margin-left: auto;
+                }
+            }
             .createNew {
                 width: 100%;
                 height: 50px;
                 display: flex;
+                align-self: stretch;
+                justify-self: stretch;
                 flex-direction: row;
-                gap: 10px;
                 > button {
                     width: 50%;
-                    height: 100%;
+                    height: 50px;
                 }
             }
-            #collections {
+            .collectionItem {
+                width: 100%;
+                height: 70px;
+                border-radius: 3px;
+                display: grid;
+                cursor: default;
+                column-gap: 10px;
+                grid-template-columns: 80px auto 40px;
+                overflow: hidden;
+                align-items: center;
+                color: inherit;
+                text-decoration: none;
+                padding: 5px;
+                background-color: var(--color-overlay1);
+                &:hover {
+                    background-color: var(--color-overlay2);
+                }
+                &:active {
+                    background-color: var(--color-overlay5);
+                }
+                &[data-checked="true"] {
+                    background-color: var(--color-overlay1);
+                    box-shadow: var(--color-primary) 0 0 0 2px;
+                    &:hover {
+                        background-color: var(--color-overlay2);
+                    }
+                    &:active {
+                        background-color: var(--color-overlay5);
+                    }
+                }
+                .cover {
+                    height: 100%;
+                    border-radius: 3px;
+                    width: 100%;
+                    overflow: hidden;
+                    margin-right: 10px;
+                    background-color: var(--color-overlay3);
+                }
+                .info {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: left;
+                    overflow: hidden;
+                    > span {
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+                    .total {
+                        color: var(--color-overlay6);
+                        font-size: 12px;
+                    }
+                    .link {
+                        color: var(--color-overlay6);
+                        font-size: 12px;
+                    }
+                }
+                .options {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    height: 100%;
+                    width: 100%;
+                }
+            }
+            .collection-view {
                 width: 100%;
                 position: relative;
                 display: flex;
@@ -121,89 +279,11 @@ body {
                 align-items: center;
                 gap: 10px;
                 font-size: 17px;
-                .collectionItem {
-                    width: 100%;
-                    height: 70px;
-                    background-color: var(--color-overlay1);
-                    border-radius: 3px;
-                    display: grid;
-                    column-gap: 10px;
-                    grid-template-columns: 80px auto 30px;
-                    align-items: center;
-                    color: inherit;
-                    text-decoration: none;
-                    padding: 5px;
-                    &:hover {
-                        background-color: var(--color-overlay2);
-                    }
-                    &:active {
-                        background-color: var(--color-overlay5);
-                    }
-                    .cover {
-                        height: 100%;
-                        border-radius: 3px;
-                        width: 100%;
-                        overflow: hidden;
-                        margin-right: 10px;
-                        background-color: var(--color-overlay3);
-                    }
-                    .info {
-                        display: flex;
-                        flex-direction: column;
-                        align-items: left;
-                        .total {
-                            color: var(--color-overlay6);
-                            font-size: 12px;
-                        }
-                    }
-                }
+            }
+            #collections {
             }
 
             #collectionView {
-                width: 100%;
-                position: relative;
-                display: flex;
-                flex-direction: column;
-                padding: 10px;
-                align-items: center;
-                gap: 10px;
-                font-size: 17px;
-                .collectionContentItem {
-                    width: 100%;
-                    height: 70px;
-                    background-color: var(--color-overlay1);
-                    border-radius: 3px;
-                    display: grid;
-                    column-gap: 10px;
-                    grid-template-columns: 80px auto 30px;
-                    align-items: center;
-                    color: inherit;
-                    text-decoration: none;
-                    padding: 5px;
-                    &:hover {
-                        background-color: var(--color-overlay2);
-                    }
-                    &:active {
-                        background-color: var(--color-overlay5);
-                    }
-                    .cover {
-                        height: 100%;
-                        border-radius: 3px;
-                        width: 100%;
-                        overflow: hidden;
-                        margin-right: 10px;
-                        background-color: var(--color-overlay3);
-                    }
-                    .info {
-                        display: flex;
-                        flex-direction: column;
-                        align-items: left;
-                        .link {
-                            color: var(--color-overlay6);
-                            font-size: 12px;
-                        }
-                    }
-                }
             }
         }
     }
