@@ -8,7 +8,6 @@ const Collections = ({
     currentCollectionUpdater,
     newCollection1,
     newCollection2,
-    promptConfirm,
 }) => {
     const openCollection = (index) => {
         currentCollectionUpdater(index);
@@ -80,6 +79,34 @@ const Collections = ({
             );
         });
     };
+    const [PromptConfirm, PromptConfirmMaker] = useState("");
+    const promptConfirm = (msg, callback) => {
+        PromptConfirmMaker(
+            <div className="promptConfirmCont">
+                <div className="prompt">
+                    <div className="msg">{msg}</div>
+                    <div className="option">
+                        <button
+                            onClick={() => {
+                                callback();
+                                PromptConfirmMaker("");
+                            }}
+                            className="warn"
+                        >
+                            Confirm
+                        </button>
+                        <button
+                            onClick={() => {
+                                PromptConfirmMaker("");
+                            }}
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    };
     return (
         <>
             <TopBar
@@ -92,9 +119,6 @@ const Collections = ({
                     className="contextMenu"
                     ref={contextMenu}
                     data-state={contextMenuState}
-                    onContextMenu={(e) => {
-                        e.preventDefault();
-                    }}
                     onClick={() => {
                         contextMenuStateUpdater("closed");
                     }}
@@ -110,14 +134,31 @@ const Collections = ({
                     <li
                         role="button"
                         onClick={() => {
+                            navigator.clipboard.writeText(
+                                JSON.stringify(
+                                    collectionData[contextMenuSelectedIndex]
+                                        .content
+                                )
+                            );
+                        }}
+                    >
+                        Copy Links(JSON)
+                    </li>
+                    <li
+                        role="button"
+                        onClick={() => {
                             /* eslint-disable */
-                            let links = collectionData[
-                                contextMenuSelectedIndex
-                            ].content.map((e) => e.href);
-                            if (contextMenuSelectedIndex !== null)
-                                chrome.tabs.create({
-                                    url: links,
-                                }); /* eslint-enable */
+                            if (contextMenuSelectedIndex !== null) {
+                                let links = collectionData[
+                                    contextMenuSelectedIndex
+                                ].content.map((e) => e.href);
+                                links.forEach((link) => {
+                                    chrome.tabs.create({
+                                        url: link,
+                                        active: false,
+                                    }); /* eslint-enable */
+                                });
+                            }
                         }}
                     >
                         Open All
@@ -170,15 +211,16 @@ const Collections = ({
                     <span className="options">
                         <button
                             onClick={() => {
-                                removeCollections(selectedCollection);
-                                selectedCollectionUpdater([]);
-                                deSelectAll();
-                                return;
+                                // removeCollections(selectedCollection);
+                                // deSelectAll();
                                 promptConfirm(
                                     "Are you sure you want to delete " +
                                         selectedCollection.length +
                                         " collections",
-                                    () => removeCollections(selectedCollection)
+                                    () => {
+                                        removeCollections(selectedCollection);
+                                        deSelectAll();
+                                    }
                                 );
                             }}
                         >
@@ -247,6 +289,7 @@ const Collections = ({
                     )}
                 </div>
             </div>
+            {PromptConfirm}
         </>
     );
 };

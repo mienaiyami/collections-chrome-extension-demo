@@ -122,9 +122,6 @@ const CollectionView = ({
                     className="contextMenu"
                     ref={contextMenu}
                     data-state={contextMenuState}
-                    onContextMenu={(e) => {
-                        e.preventDefault();
-                    }}
                     onClick={() => {
                         contextMenuStateUpdater("closed");
                     }}
@@ -211,11 +208,42 @@ const CollectionView = ({
                     <span className="options">
                         <button
                             onClick={() => {
+                                /* eslint-disable */
+                                let links = collection.content
+                                    .filter((e, i) => selectedLink.includes(i))
+                                    .map((e) => e.href);
+                                links.forEach((link) => {
+                                    chrome.tabs.create({
+                                        url: link,
+                                        active: false,
+                                    }); /* eslint-enable */
+                                });
+                            }}
+                        >
+                            Open
+                        </button>
+                        <button
+                            onClick={() => {
+                                /* eslint-disable */
+                                let links = collection.content
+                                    .filter((e, i) => selectedLink.includes(i))
+                                    .map((e) => e.href);
+                                chrome.windows.create({
+                                    url: links,
+                                    state: "maximized",
+                                    incognito: true,
+                                }); /* eslint-enable */
+                            }}
+                        >
+                            Open Incognito
+                        </button>
+                        <button
+                            onClick={() => {
                                 removeLinkFromCollection(
                                     currentCollection,
                                     selectedLink
                                 );
-                                selectedLinkUpdater([]);
+                                deSelectAll();
                             }}
                         >
                             <svg

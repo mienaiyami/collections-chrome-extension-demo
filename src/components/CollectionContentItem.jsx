@@ -25,19 +25,23 @@ const CollectionContentItem = ({
         if (checkboxState === false) removeFromSelected(indexNumber);
     }, [checkboxState]);
     return (
-        <a
+        <div
             className="collectionContentItem collectionItem"
-            href={href}
             tabIndex="0"
             data-checked={checkboxState}
-            onClick={(e) => {
-                e.preventDefault();
+            onClick={() => {
                 /* eslint-disable */
-                chrome.tabs.create({ url: href });
+                chrome.tabs.update({ url: href });
+                /* eslint-enable */
+            }}
+            onMouseDown={(e) => {
+                e.preventDefault();
+                if (e.button === 1)
+                    /* eslint-disable */
+                    chrome.tabs.create({ url: href, active: false });
                 /* eslint-enable */
             }}
             onContextMenu={(e) => {
-                e.preventDefault();
                 linkContextMenu(e, indexNumber);
             }}
             draggable
@@ -69,7 +73,7 @@ const CollectionContentItem = ({
                 </button> */}
                 <CheckBox ref={checkboxRef} />
             </div>
-        </a>
+        </div>
     );
 };
 

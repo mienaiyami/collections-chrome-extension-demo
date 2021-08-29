@@ -284,5 +284,36 @@ body {
                 font-size: 17px;
             }
         }
+        .promptConfirmCont {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            background-color: var(--color-overlay1);
+            display: grid;
+            place-items: center;
+            .prompt {
+                width: 300px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                background-color: var(--color-background);
+                padding: 10px;
+                border-radius: 2px;
+                .msg {
+                }
+                .option {
+                    display: flex;
+                    flex-direction: row;
+                    .warn {
+                        &:hover {
+                            background: var(--color-error);
+                        }
+                    }
+                }
+            }
+        }
     }
 }

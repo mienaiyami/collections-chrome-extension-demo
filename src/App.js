@@ -173,6 +173,9 @@ const App = () => {
                 console.log("data1", data);
             });
         }
+        document.getElementById("app").oncontextmenu = (e) => {
+            e.preventDefault();
+        };
     }, []);
     /* eslint-enable */
     const [currentCollection, currentCollectionUpdater] = useState(null);
@@ -282,20 +285,6 @@ const App = () => {
             dataUpdater(data);
         }
     };
-    const promptConfirm = (msg, callback) => {
-        const prompt = (
-            <div className="prompt">
-                <div className="msg">{msg}</div>
-                <div className="options">
-                    <button onClick={callback}>Confirm</button>
-                    <button onclick="this.parentElement.style.display='none'">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        );
-        document.getElementById("app").append();
-    };
     return (
         <>
             {newColMaking === true ? (
@@ -311,7 +300,6 @@ const App = () => {
                     addToCollections={addToCollections}
                     addLinkToCollection={addLinkToCollection}
                     removeLinkFromCollection={removeLinkFromCollection}
-                    promptConfirm={promptConfirm}
                 />
             ) : currentCollection === null ? (
                 <Collections
@@ -320,7 +308,6 @@ const App = () => {
                     newCollection2={initNewCollection2}
                     currentCollectionUpdater={currentCollectionUpdater}
                     removeCollections={removeCollections}
-                    promptConfirm={promptConfirm}
                 />
             ) : (
                 <CollectionView
@@ -334,7 +321,6 @@ const App = () => {
                     currentCollectionUpdater={currentCollectionUpdater}
                     addLinkToCollection={addLinkToCollection}
                     removeLinkFromCollection={removeLinkFromCollection}
-                    promptConfirm={promptConfirm}
                 />
             )}
         </>
