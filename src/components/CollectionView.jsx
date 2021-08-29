@@ -84,24 +84,42 @@ const CollectionView = ({
             );
         });
     };
-    const addLink = (e) => {
-        console.log("dddd");
-        //eslint-disable-next-line
-        chrome.tabs
-            .query({
-                active: true,
-                currentWindow: true,
-            })
-            .then((tabs) => {
-                const tab = tabs[0];
-                console.log(tab);
-                addLinkToCollection({
-                    colIndex: isNew ? 0 : currentCollection,
-                    link: tab.url,
-                    title: tab.title,
-                    cover: tab.favIconUrl,
+    const addLink = (which, e) => {
+        if (which === "current") {
+            //eslint-disable-next-line
+            chrome.tabs
+                .query({
+                    active: true,
+                    currentWindow: true,
+                })
+                .then((tabs) => {
+                    const tab = tabs[0];
+                    console.log(tab);
+                    addLinkToCollection({
+                        colIndex: isNew ? 0 : currentCollection,
+                        link: tab.url,
+                        title: tab.title,
+                        cover: tab.favIconUrl,
+                    });
                 });
-            });
+        }
+        if (which === "all") {
+            //eslint-disable-next-line
+            chrome.tabs
+                .query({
+                    currentWindow: true,
+                })
+                .then((tabs) => {
+                    for (let i = tabs.length - 1; i >= 0; i--) {
+                        addLinkToCollection({
+                            colIndex: currentCollection,
+                            link: tabs[i].url,
+                            title: tabs[i].title,
+                            cover: tabs[i].favIconUrl,
+                        });
+                    }
+                });
+        }
     };
     let content;
     content = (
@@ -277,8 +295,17 @@ const CollectionView = ({
                             : { display: "none" }
                     }
                 >
-                    <button className="addCurrentLink" onClick={addLink}>
-                        Add Current Link
+                    <button
+                        className="addCurrentLink"
+                        onClick={() => addLink("current")}
+                    >
+                        Add Current Tab
+                    </button>
+                    <button
+                        className="addCurrentLink"
+                        onClick={() => addLink("all")}
+                    >
+                        Add All opened Tabs
                     </button>
                 </div>
                 <div

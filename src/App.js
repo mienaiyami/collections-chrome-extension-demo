@@ -162,11 +162,11 @@ const App = () => {
         if (isDev) {
             dataUpdater(DAT);
         } else {
-            chrome.storage.sync.get("collections", ({ collections }) => {
+            chrome.storage.local.get("collections", ({ collections }) => {
                 console.log("d", collections);
                 if (collections === undefined) {
                     dataUpdater([]);
-                    chrome.storage.sync.set({ collections: [] }, () => {
+                    chrome.storage.local.set({ collections: [] }, () => {
                         console.log("yeee", data);
                     });
                 } else dataUpdater(collections);
@@ -209,8 +209,8 @@ const App = () => {
         if (!isDev) {
             /* eslint-disable */
             console.log(data);
-            chrome.storage.sync.set({ collections: data });
-            chrome.storage.sync.get("collections", ({ collections }) => {
+            chrome.storage.local.set({ collections: data });
+            chrome.storage.local.get("collections", ({ collections }) => {
                 console.log(data, collections);
             });
             /* eslint-enable */
