@@ -182,27 +182,30 @@ const App = () => {
         newColMakingUpdater(true);
     };
     const addToCollections = ({ name, content }) => {
-        let occ = 0;
-        let name1 = name;
-        console.log(name1);
-        while (data.map((e) => e.name).includes(name1)) {
-            occ++;
-            name1 = name + "_" + occ;
-            console.log(name1);
-            if (occ > 100) break;
-        }
-        if (occ > 100) return;
+        // let occ = 0;
+        // let name1 = name;
+        // console.log(name1);
+        // while (data.map((e) => e.name).includes(name1)) {
+        //     occ++;
+        //     name1 = name + "_" + occ;
+        //     console.log(name1);
+        //     if (occ > 100) break;
+        // }
+        // if (occ > 100) return;
         const newData = {
-            name: name1,
+            name: name,
             cover: "",
             content,
         };
         const updatedData = [newData, ...data];
+        console.log("new");
         dataUpdater(updatedData);
     };
     useEffect(() => {
+        console.log(data);
         if (!isDev) {
             /* eslint-disable */
+            console.log(data);
             chrome.storage.sync.set({ collections: data });
             chrome.storage.sync.get("collections", ({ collections }) => {
                 console.log(data, collections);
@@ -217,7 +220,7 @@ const App = () => {
             cover: cover || "",
             href: link,
         };
-        console.log(newContentItem);
+        console.log("newContentItem", newContentItem);
         data[colIndex].content.unshift(newContentItem);
         dataUpdater([...data]);
     };

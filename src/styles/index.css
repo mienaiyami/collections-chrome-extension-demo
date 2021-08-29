@@ -339,6 +339,10 @@ body #app #main .collectionItem {
   background-color: var(--color-overlay1);
 }
 
+body #app #main .collectionItem.collectionContentItem {
+  cursor: pointer;
+}
+
 body #app #main .collectionItem:hover {
   background-color: var(--color-overlay2);
 }

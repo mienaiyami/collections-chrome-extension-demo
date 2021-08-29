@@ -23,6 +23,8 @@ const CollectionView = ({
     const collectionViewRef = useRef(null);
     const contextMenu = useRef(null);
     const [contextMenuState, contextMenuStateUpdater] = useState("closed");
+    const [contextMenuSelectedIndex, contextMenuSelectedIndexUpdater] =
+        useState(null);
     const linkContextMenu = (e, index) => {
         if (contextMenu.current !== null) {
             let x =
@@ -41,7 +43,7 @@ const CollectionView = ({
                       30
                     : e.clientY;
             console.log(x, y);
-            console.log(contextMenu.current.offsetWidth);
+            contextMenuSelectedIndexUpdater(index);
             contextMenu.current.style.left = x + "px";
             contextMenu.current.style.top = y + "px";
         }
@@ -62,6 +64,17 @@ const CollectionView = ({
         if (selectedLink.length > 0) {
         }
     }, [selectedLink]);
+    useEffect(() => {
+        document.addEventListener("mousedown", (e) => {
+            if (
+                contextMenu !== null &&
+                e.target !== contextMenu.current &&
+                !e.path.includes(contextMenu.current)
+            ) {
+                contextMenuStateUpdater("closed");
+            }
+        });
+    }, []);
     const deSelectAll = () => {
         selectedLinkUpdater([]);
         [...collectionViewRef.current?.children].forEach((e) => {
@@ -72,7 +85,7 @@ const CollectionView = ({
         });
     };
     const addLink = (e) => {
-        console.log("fffff");
+        console.log("dddd");
         //eslint-disable-next-line
         chrome.tabs
             .query({
@@ -81,8 +94,9 @@ const CollectionView = ({
             })
             .then((tabs) => {
                 const tab = tabs[0];
+                console.log(tab);
                 addLinkToCollection({
-                    colIndex: currentCollection,
+                    colIndex: isNew ? 0 : currentCollection,
                     link: tab.url,
                     title: tab.title,
                     cover: tab.favIconUrl,
@@ -90,7 +104,6 @@ const CollectionView = ({
             });
     };
     let content;
-    console.log(isNew);
     content = (
         <>
             <TopBar
@@ -100,6 +113,7 @@ const CollectionView = ({
                 isNewCollection={isNew}
                 addToCollections={addToCollections}
                 newColMakingUpdater={newColMakingUpdater}
+                currentCollectionUpdater={currentCollectionUpdater}
                 editCollection={editCollection}
                 currentCollection={currentCollection}
             />
@@ -111,11 +125,77 @@ const CollectionView = ({
                     onContextMenu={(e) => {
                         e.preventDefault();
                     }}
+                    onClick={() => {
+                        contextMenuStateUpdater("closed");
+                    }}
                 >
-                    <li role="button">Remove Link</li>
-                    <li role="button">Open</li>
-                    <li role="button">Open in new window</li>
-                    <li role="button">Open in incognito window</li>
+                    <li
+                        role="button"
+                        onClick={() => {
+                            removeLinkFromCollection(currentCollection, [
+                                contextMenuSelectedIndex,
+                            ]);
+                        }}
+                    >
+                        Remove Link
+                    </li>
+                    <li
+                        role="button"
+                        onClick={() => {
+                            if (contextMenuSelectedIndex !== null)
+                                navigator.clipboard.writeText(
+                                    collection.content[contextMenuSelectedIndex]
+                                        .href
+                                );
+                        }}
+                    >
+                        Copy Link
+                    </li>
+                    <li
+                        role="button"
+                        onClick={() => {
+                            /* eslint-disable */
+                            if (contextMenuSelectedIndex !== null)
+                                chrome.tabs.create({
+                                    url: collection.content[
+                                        contextMenuSelectedIndex
+                                    ].href,
+                                }); /* eslint-enable */
+                        }}
+                    >
+                        Open
+                    </li>
+                    <li
+                        role="button"
+                        onClick={() => {
+                            /* eslint-disable */
+                            if (contextMenuSelectedIndex !== null)
+                                chrome.windows.create({
+                                    url: collection.content[
+                                        contextMenuSelectedIndex
+                                    ].href,
+                                    state: "maximized",
+                                }); /* eslint-enable */
+                        }}
+                    >
+                        Open in new window
+                    </li>
+                    <li
+                        role="button"
+                        onClick={() => {
+                            /* eslint-disable */
+                            if (contextMenuSelectedIndex !== null)
+                                chrome.windows.create({
+                                    url: collection.content[
+                                        contextMenuSelectedIndex
+                                    ].href,
+                                    state: "maximized",
+                                    incognito: true,
+                                }); /* eslint-enable */
+                        }}
+                    >
+                        Open in incognito window
+                    </li>
                 </div>
                 <div
                     className="deleteSelected"
@@ -172,7 +252,6 @@ const CollectionView = ({
                     <button className="addCurrentLink" onClick={addLink}>
                         Add Current Link
                     </button>
-                    <button className="customLink">New Link</button>
                 </div>
                 <div
                     id="collectionView "

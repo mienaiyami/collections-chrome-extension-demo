@@ -219,6 +219,9 @@ body {
                 text-decoration: none;
                 padding: 5px;
                 background-color: var(--color-overlay1);
+                &.collectionContentItem {
+                    cursor: pointer;
+                }
                 &:hover {
                     background-color: var(--color-overlay2);
                 }
@@ -279,11 +282,6 @@ body {
                 align-items: center;
                 gap: 10px;
                 font-size: 17px;
-            }
-            #collections {
-            }
-
-            #collectionView {
             }
         }
     }

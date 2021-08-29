@@ -11,13 +11,14 @@ const Collections = ({
     promptConfirm,
 }) => {
     const openCollection = (index) => {
-        // console.log(DATA.filter((data) => data.name === name));
         currentCollectionUpdater(index);
     };
     const mainContRef = useRef(null);
     const collectionRef = useRef(null);
     const contextMenu = useRef(null);
     const [contextMenuState, contextMenuStateUpdater] = useState("closed");
+    const [contextMenuSelectedIndex, contextMenuSelectedIndexUpdater] =
+        useState(null);
     const collectionContextMenu = (e, index) => {
         if (contextMenu.current !== null) {
             let x =
@@ -36,7 +37,7 @@ const Collections = ({
                       30
                     : e.clientY;
             console.log(x, y);
-            console.log(contextMenu.current.offsetWidth);
+            contextMenuSelectedIndexUpdater(index);
             contextMenu.current.style.left = x + "px";
             contextMenu.current.style.top = y + "px";
         }
@@ -94,11 +95,66 @@ const Collections = ({
                     onContextMenu={(e) => {
                         e.preventDefault();
                     }}
+                    onClick={() => {
+                        contextMenuStateUpdater("closed");
+                    }}
                 >
-                    <li role="button">Remove Collection</li>
-                    <li role="button">Open All</li>
-                    <li role="button">Open All in new window</li>
-                    <li role="button">Open All in incognito window</li>
+                    <li
+                        role="button"
+                        onClick={() => {
+                            removeCollections([contextMenuSelectedIndex]);
+                        }}
+                    >
+                        Remove Collection
+                    </li>
+                    <li
+                        role="button"
+                        onClick={() => {
+                            /* eslint-disable */
+                            let links = collectionData[
+                                contextMenuSelectedIndex
+                            ].content.map((e) => e.href);
+                            if (contextMenuSelectedIndex !== null)
+                                chrome.tabs.create({
+                                    url: links,
+                                }); /* eslint-enable */
+                        }}
+                    >
+                        Open All
+                    </li>
+                    <li
+                        role="button"
+                        onClick={() => {
+                            /* eslint-disable */
+                            let links = collectionData[
+                                contextMenuSelectedIndex
+                            ].content.map((e) => e.href);
+                            if (contextMenuSelectedIndex !== null)
+                                chrome.windows.create({
+                                    url: links,
+                                    state: "maximized",
+                                }); /* eslint-enable */
+                        }}
+                    >
+                        Open All in new window
+                    </li>
+                    <li
+                        role="button"
+                        onClick={() => {
+                            /* eslint-disable */
+                            let links = collectionData[
+                                contextMenuSelectedIndex
+                            ].content.map((e) => e.href);
+                            if (contextMenuSelectedIndex !== null)
+                                chrome.windows.create({
+                                    url: links,
+                                    state: "maximized",
+                                    incognito: true,
+                                }); /* eslint-enable */
+                        }}
+                    >
+                        Open All in incognito window
+                    </li>
                 </div>
                 <div
                     className="deleteSelected"
@@ -116,6 +172,7 @@ const Collections = ({
                             onClick={() => {
                                 removeCollections(selectedCollection);
                                 selectedCollectionUpdater([]);
+                                deSelectAll();
                                 return;
                                 promptConfirm(
                                     "Are you sure you want to delete " +
@@ -168,20 +225,26 @@ const Collections = ({
                     ref={collectionRef}
                     className="collection-view"
                 >
-                    {collectionData.map((e, i) => (
-                        <CollectionItem
-                            key={e.name + i}
-                            name={e.name}
-                            cover={e.cover}
-                            total={e.content.length}
-                            indexNumber={i}
-                            openCollection={openCollection}
-                            removeCollections={removeCollections}
-                            collectionContextMenu={collectionContextMenu}
-                            addToSelected={addToSelected}
-                            removeFromSelected={removeFromSelected}
-                        />
-                    ))}
+                    {collectionData === null ? (
+                        <p>No Collection</p>
+                    ) : collectionData.length === 0 ? (
+                        <p>No Collection</p>
+                    ) : (
+                        collectionData.map((e, i) => (
+                            <CollectionItem
+                                key={e.name + i}
+                                name={e.name}
+                                cover={e.cover}
+                                total={e.content.length}
+                                indexNumber={i}
+                                openCollection={openCollection}
+                                removeCollections={removeCollections}
+                                collectionContextMenu={collectionContextMenu}
+                                addToSelected={addToSelected}
+                                removeFromSelected={removeFromSelected}
+                            />
+                        ))
+                    )}
                 </div>
             </div>
         </>

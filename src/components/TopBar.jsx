@@ -9,6 +9,7 @@ const TopBar = ({
     currentCollection,
     addToCollections,
     editCollection,
+    currentCollectionUpdater,
 }) => {
     isNewCollection = isNewCollection === undefined ? false : isNewCollection;
     const inputRef = useRef(null);
@@ -95,10 +96,14 @@ const TopBar = ({
                                         index: currentCollection,
                                         name: e.target.value,
                                     });
-                                addToCollections({
-                                    name: e.target.value,
-                                    content: [],
-                                });
+                                if (isNewCollection) {
+                                    addToCollections({
+                                        name: e.target.value,
+                                        content: [],
+                                    });
+                                    newColMakingUpdater(false);
+                                    currentCollectionUpdater(0);
+                                }
                             }}
                         />
                     </h2>
