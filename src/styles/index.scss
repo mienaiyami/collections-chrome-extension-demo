@@ -159,10 +159,15 @@ body {
             flex-direction: row;
             align-items: center;
             border-bottom: 1px solid var(--color-overlay3);
-            input {
-                background: var(--color-overlay1);
-                &:focus {
-                    background-color: var(--color-overlay2);
+            h2 {
+                margin-right: 10px;
+                input {
+                    background: var(--color-overlay1);
+                    width: 100%;
+                    padding: 0 5px;
+                    &:focus {
+                        background-color: var(--color-overlay2);
+                    }
                 }
             }
             .goback {

@@ -227,11 +227,17 @@ body #app #topbar {
   border-bottom: 1px solid var(--color-overlay3);
 }
 
-body #app #topbar input {
-  background: var(--color-overlay1);
+body #app #topbar h2 {
+  margin-right: 10px;
 }
 
-body #app #topbar input:focus {
+body #app #topbar h2 input {
+  background: var(--color-overlay1);
+  width: 100%;
+  padding: 0 5px;
+}
+
+body #app #topbar h2 input:focus {
   background-color: var(--color-overlay2);
 }
 
