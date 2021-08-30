@@ -17,7 +17,6 @@ const CollectionItem = ({
     useEffect(() => {
         checkboxRef.current.addEventListener("change", (e) => {
             let state = e.target.checked;
-            console.log("ddddddd");
             checkboxStateUpdater(state);
         });
     }, []);
@@ -28,7 +27,7 @@ const CollectionItem = ({
     }, [checkboxState]);
     return (
         <div
-            className="collectionItem"
+            className="collectionItem noImg"
             data-checked={checkboxState}
             tabIndex="0"
             onClick={() => openCollection(indexNumber)}
@@ -36,13 +35,14 @@ const CollectionItem = ({
                 e.preventDefault();
                 collectionContextMenu(e, indexNumber);
             }}
-            draggable
         >
             <div className="cover">
                 <img src={cover || ""} alt="Img" />
             </div>
             <div className="info">
-                <span className="name">{name || "ddddd"}</span>
+                <span className="name" title={name}>
+                    {name || "ddddd"}
+                </span>
                 <span className="total">
                     {total
                         ? total > 1

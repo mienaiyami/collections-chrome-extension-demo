@@ -3,174 +3,28 @@ import Collections from "./components/Collections";
 import CollectionView from "./components/CollectionView";
 
 const isDev = process.env.NODE_ENV === "development";
-console.log(process.env.NODE_ENV, isDev);
-const DAT = [
-    {
-        name: "col1",
-        cover: "",
-        content: [
-            {
-                type: "link",
-                title: "dddd",
-                cover: "",
-                href: "https://github.com/",
-            },
-        ],
-    },
-    {
-        name: "col2",
-        cover: "",
-        content: [],
-    },
-    {
-        name: "col3",
-        cover: "",
-        content: [
-            {
-                type: "link",
-                title: "dddd",
-                cover: "",
-                href: "https://github.com/",
-            },
-            {
-                type: "link",
-                title: "dddd",
-                cover: "",
-                href: "https://github.com/",
-            },
-            {
-                type: "link",
-                title: "dddd",
-                cover: "",
-                href: "https://github.com/",
-            },
-            {
-                type: "link",
-                title: "dddd",
-                cover: "",
-                href: "https://github.com/",
-            },
-            {
-                type: "link",
-                title: "dddd",
-                cover: "",
-                href: "https://github.com/",
-            },
-            {
-                type: "link",
-                title: "dddd",
-                cover: "",
-                href: "https://github.com/",
-            },
-            {
-                type: "link",
-                title: "dddd",
-                cover: "",
-                href: "https://github.com/",
-            },
-            {
-                type: "link",
-                title: "dddd",
-                cover: "",
-                href: "https://github.com/",
-            },
-            {
-                type: "link",
-                title: "dddd",
-                cover: "",
-                href: "https://github.com/",
-            },
-            {
-                type: "link",
-                title: "dddd",
-                cover: "",
-                href: "https://github.com/",
-            },
-            {
-                type: "link",
-                title: "dddd",
-                cover: "",
-                href: "https://github.com/",
-            },
-            {
-                type: "link",
-                title: "dddd",
-                cover: "",
-                href: "https://github.com/",
-            },
-            {
-                type: "link",
-                title: "dddd",
-                cover: "",
-                href: "https://github.com/",
-            },
-            {
-                type: "link",
-                title: "dddd",
-                cover: "",
-                href: "https://github.com/",
-            },
-            {
-                type: "link",
-                title: "dddd",
-                cover: "",
-                href: "https://github.com/",
-            },
-            {
-                type: "link",
-                title: "dddd",
-                cover: "",
-                href: "https://github.com/",
-            },
-        ],
-    },
-    {
-        name: "col4",
-        cover: "",
-        content: [
-            {
-                type: "link",
-                title: "dddd",
-                cover: "",
-                href: "https://github.com/",
-            },
-            {
-                type: "link",
-                title: "dddd",
-                cover: "",
-                href: "https://github.com/",
-            },
-            {
-                type: "link",
-                title: "dddd",
-                cover: "",
-                href: "https://github.com/",
-            },
-            {
-                type: "link",
-                title: "dddd",
-                cover: "",
-                href: "https://github.com/",
-            },
-        ],
-    },
-];
 
 const App = () => {
-    const [data, dataUpdater] = useState([]); /* eslint-disable */
+    const [data, dataUpdater] = useState([]);
+    const [theme, themeUpdater] = useState("dark");
+    /* eslint-disable */
     useEffect(() => {
         if (isDev) {
-            dataUpdater(DAT);
+            import("./testdata").then((e) => {
+                dataUpdater(e.default);
+            });
         } else {
             chrome.storage.local.get("collections", ({ collections }) => {
-                console.log("d", collections);
                 if (collections === undefined) {
                     dataUpdater([]);
-                    chrome.storage.local.set({ collections: [] }, () => {
-                        console.log("yeee", data);
-                    });
+                    chrome.storage.local.set({ collections: [] }, () => {});
                 } else dataUpdater(collections);
-                console.log("data1", data);
+            });
+            chrome.storage.local.get("theme", ({ theme }) => {
+                if (theme === undefined) {
+                    themeUpdater("dark");
+                    chrome.storage.local.set({ theme: "dark" }, () => {});
+                } else themeUpdater(theme);
             });
         }
         document.getElementById("app").oncontextmenu = (e) => {
@@ -187,35 +41,41 @@ const App = () => {
     const addToCollections = ({ name, content }) => {
         // let occ = 0;
         // let name1 = name;
-        // console.log(name1);
         // while (data.map((e) => e.name).includes(name1)) {
         //     occ++;
         //     name1 = name + "_" + occ;
-        //     console.log(name1);
         //     if (occ > 100) break;
         // }
         // if (occ > 100) return;
         const newData = {
             name: name,
-            cover: "",
             content,
         };
         const updatedData = [newData, ...data];
-        console.log("new");
         dataUpdater(updatedData);
     };
     useEffect(() => {
-        console.log(data);
         if (!isDev) {
             /* eslint-disable */
-            console.log(data);
             chrome.storage.local.set({ collections: data });
-            chrome.storage.local.get("collections", ({ collections }) => {
-                console.log(data, collections);
-            });
             /* eslint-enable */
         }
     }, [data]);
+    useEffect(() => {
+        if (theme === "dark") {
+            document.body.classList.remove("lightTheme");
+            document.body.classList.add("darkTheme");
+        }
+        if (theme === "light") {
+            document.body.classList.remove("darkTheme");
+            document.body.classList.add("lightTheme");
+        }
+        if (!isDev) {
+            /* eslint-disable */
+            chrome.storage.local.set({ theme });
+            /* eslint-enable */
+        }
+    }, [theme]);
     const addLinkToCollection = ({ colIndex, link, title, cover }) => {
         let newContentItem = {
             type: "link",
@@ -223,37 +83,29 @@ const App = () => {
             cover: cover || "",
             href: link,
         };
-        console.log("newContentItem", newContentItem);
         data[colIndex].content.unshift(newContentItem);
         dataUpdater([...data]);
     };
     const removeCollections = (indexes) => {
-        // data.splice(index, 1);
         if (data.length < Math.max(...indexes)) return;
         let newData = [...data].filter((e, i) => {
-            console.log(indexes.includes(i), indexes, i);
             return !indexes.includes(i);
         });
-        console.log(newData);
         dataUpdater(newData);
     };
     const removeLinkFromCollection = (colIndex, indexes) => {
         if (data.length < colIndex) return;
         if (data[colIndex].content.length < Math.max(...indexes)) return;
-        console.log(colIndex, indexes);
         let newData = [...data];
         newData[colIndex].content = newData[colIndex].content.filter((e, i) => {
-            console.log(indexes.includes(i), indexes, i);
             return !indexes.includes(i);
         });
-        console.log(newData);
         dataUpdater(newData);
     };
     const initNewCollection2 = () => {
         let content = [];
         //eslint-disable-next-line
         chrome.tabs.query({ currentWindow: true }).then((tabs) => {
-            console.log(tabs);
             tabs.forEach((e) => {
                 content.push({
                     type: "link",
@@ -300,6 +152,8 @@ const App = () => {
                     addToCollections={addToCollections}
                     addLinkToCollection={addLinkToCollection}
                     removeLinkFromCollection={removeLinkFromCollection}
+                    theme={theme}
+                    themeUpdater={themeUpdater}
                 />
             ) : currentCollection === null ? (
                 <Collections
@@ -308,6 +162,8 @@ const App = () => {
                     newCollection2={initNewCollection2}
                     currentCollectionUpdater={currentCollectionUpdater}
                     removeCollections={removeCollections}
+                    theme={theme}
+                    themeUpdater={themeUpdater}
                 />
             ) : (
                 <CollectionView
@@ -321,6 +177,8 @@ const App = () => {
                     currentCollectionUpdater={currentCollectionUpdater}
                     addLinkToCollection={addLinkToCollection}
                     removeLinkFromCollection={removeLinkFromCollection}
+                    theme={theme}
+                    themeUpdater={themeUpdater}
                 />
             )}
         </>
@@ -328,9 +186,3 @@ const App = () => {
 };
 
 export default App;
-
-// "icons": {
-//     "16": "",
-//     "48": "",
-//     "128": ""
-// },

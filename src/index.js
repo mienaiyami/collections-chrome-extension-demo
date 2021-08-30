@@ -9,3 +9,4 @@ ReactDOM.render(
     </React.StrictMode>,
     document.getElementById("app")
 );
+//todo: add option to excule cover pic;

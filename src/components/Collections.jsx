@@ -8,6 +8,8 @@ const Collections = ({
     currentCollectionUpdater,
     newCollection1,
     newCollection2,
+    theme,
+    themeUpdater,
 }) => {
     const openCollection = (index) => {
         currentCollectionUpdater(index);
@@ -35,7 +37,6 @@ const Collections = ({
                       contextMenu.current.offsetHeight -
                       30
                     : e.clientY;
-            console.log(x, y);
             contextMenuSelectedIndexUpdater(index);
             contextMenu.current.style.left = x + "px";
             contextMenu.current.style.top = y + "px";
@@ -55,7 +56,6 @@ const Collections = ({
         }
     };
     useEffect(() => {
-        console.log("aaaa", selectedCollection);
         if (selectedCollection.length > 0) {
         }
     }, [selectedCollection]);
@@ -113,6 +113,8 @@ const Collections = ({
                 main={true}
                 name="Collections"
                 currentCollectionUpdater={currentCollectionUpdater}
+                theme={theme}
+                themeUpdater={themeUpdater}
             />
             <div id="main" ref={mainContRef}>
                 <div
@@ -276,7 +278,11 @@ const Collections = ({
                             <CollectionItem
                                 key={e.name + i}
                                 name={e.name}
-                                cover={e.cover}
+                                cover={
+                                    e.content.length !== 0
+                                        ? e.content[0].cover
+                                        : ""
+                                }
                                 total={e.content.length}
                                 indexNumber={i}
                                 openCollection={openCollection}

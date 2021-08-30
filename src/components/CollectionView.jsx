@@ -14,6 +14,8 @@ const CollectionView = ({
     editCollection,
     addLinkToCollection,
     removeLinkFromCollection,
+    theme,
+    themeUpdater,
 }) => {
     const goBack = () => {
         currentCollectionUpdater(null);
@@ -42,7 +44,6 @@ const CollectionView = ({
                       contextMenu.current.offsetHeight -
                       30
                     : e.clientY;
-            console.log(x, y);
             contextMenuSelectedIndexUpdater(index);
             contextMenu.current.style.left = x + "px";
             contextMenu.current.style.top = y + "px";
@@ -60,7 +61,6 @@ const CollectionView = ({
         }
     };
     useEffect(() => {
-        console.log("aaaa", selectedLink);
         if (selectedLink.length > 0) {
         }
     }, [selectedLink]);
@@ -84,6 +84,23 @@ const CollectionView = ({
             );
         });
     };
+    const parser = new DOMParser();
+    const filterMeta = async (data) => {
+        let head = "";
+        let startPoint = data.search(/<head.*?<\/head>/gi);
+        let endPoint = data.search(/<\/head>/);
+        for (let i = startPoint; i < endPoint; i++) {
+            head += data[i];
+        }
+        head += "</head>";
+        const parsedHead = parser.parseFromString(head, "text/html");
+        // const meta = parsedHead.head.getElementsByTagName("meta");
+        const metaImgTag =
+            parsedHead.querySelector("meta[property='og:image']") ||
+            parsedHead.querySelector("meta[name='og:image']");
+        let imgUrl = metaImgTag ? metaImgTag.getAttribute("content") : "";
+        return imgUrl;
+    };
     const addLink = (which, e) => {
         if (which === "current") {
             //eslint-disable-next-line
@@ -94,7 +111,6 @@ const CollectionView = ({
                 })
                 .then((tabs) => {
                     const tab = tabs[0];
-                    console.log(tab);
                     addLinkToCollection({
                         colIndex: isNew ? 0 : currentCollection,
                         link: tab.url,
@@ -134,6 +150,8 @@ const CollectionView = ({
                 currentCollectionUpdater={currentCollectionUpdater}
                 editCollection={editCollection}
                 currentCollection={currentCollection}
+                theme={theme}
+                themeUpdater={themeUpdater}
             />
             <div id="main" ref={mainContRef}>
                 <div
@@ -320,9 +338,9 @@ const CollectionView = ({
                     ) : (
                         collection.content.map((e, i) => (
                             <CollectionContentItem
-                                cover={e.cover}
                                 title={e.title}
                                 href={e.href}
+                                displayImg={e.cover}
                                 key={e.href + i}
                                 indexNumber={i}
                                 currentCollection={currentCollection}
@@ -332,6 +350,7 @@ const CollectionView = ({
                                 linkContextMenu={linkContextMenu}
                                 addToSelected={addToSelected}
                                 removeFromSelected={removeFromSelected}
+                                filterMeta={filterMeta}
                             />
                         ))
                     )}

@@ -3,27 +3,38 @@ import CheckBox from "./CheckBox";
 const CollectionContentItem = ({
     title,
     href,
-    cover,
+    displayImg,
     removeLinkFromCollection,
     currentCollection,
     linkContextMenu,
     addToSelected,
     removeFromSelected,
     indexNumber,
+    filterMeta,
 }) => {
     const checkboxRef = useRef(null);
     const [checkboxState, checkboxStateUpdater] = useState(false);
+    const [cover, coverUpdater] = useState("");
     useEffect(() => {
         checkboxRef.current.addEventListener("change", (e) => {
             let state = e.target.checked;
-            console.log("ddddddd");
             checkboxStateUpdater(state);
         });
+        if (href.startsWith("http"))
+            fetch(href)
+                .then((raw) => raw.text())
+                .then((data) => {
+                    filterMeta(data).then((imgUrl) => {
+                        if (imgUrl === "") imgUrl = displayImg;
+                        coverUpdater(imgUrl);
+                    });
+                });
     }, []);
     useEffect(() => {
         if (checkboxState === true) addToSelected(indexNumber);
         if (checkboxState === false) removeFromSelected(indexNumber);
     }, [checkboxState]);
+
     return (
         <div
             className="collectionContentItem collectionItem"
@@ -31,27 +42,30 @@ const CollectionContentItem = ({
             data-checked={checkboxState}
             onClick={() => {
                 /* eslint-disable */
-                chrome.tabs.update({ url: href });
+                chrome.tabs.update({ imgUrl: href });
                 /* eslint-enable */
             }}
             onMouseDown={(e) => {
-                e.preventDefault();
                 if (e.button === 1)
                     /* eslint-disable */
-                    chrome.tabs.create({ url: href, active: false });
+                    e.preventDefault();
+                chrome.tabs.create({ imgUrl: href, active: false });
                 /* eslint-enable */
             }}
             onContextMenu={(e) => {
                 linkContextMenu(e, indexNumber);
             }}
-            draggable
         >
             <div className="cover">
                 <img src={cover || ""} alt="Img" />
             </div>
             <div className="info">
-                <span className="name">{title || "ddddd"}</span>
-                <span className="link">{href || ""}</span>
+                <span className="name" title={title}>
+                    {title || "ddddd"}
+                </span>
+                <span className="link" title={href}>
+                    {href || ""}
+                </span>
             </div>
             <div className="options">
                 {/* <button

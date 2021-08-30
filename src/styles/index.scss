@@ -5,7 +5,7 @@
     padding: 0;
     box-sizing: border-box;
 }
-:root {
+body.darkTheme {
     --color-primary: #bb86fc;
     --color-primary-variant: #3700b3;
     --color-secondary: #03dac6;
@@ -27,6 +27,29 @@
     --color-on-background: #ffffff;
     --color-on-surface: #ffffff;
     --color-on-error: #000000;
+}
+body.lightTheme {
+    --color-primary: #6200ee;
+    --color-primary-variant: #3700b3;
+    --color-secondary: #03dac6;
+    --color-background: #ffffff;
+    --color-overlay: 98, 0, 238;
+    --color-overlay1: rgba(var(--color-overlay), 0.1);
+    --color-overlay2: rgba(var(--color-overlay), 0.2);
+    --color-overlay3: rgba(var(--color-overlay), 0.3);
+    --color-overlay4: rgba(var(--color-overlay), 0.4);
+    --color-overlay5: rgba(var(--color-overlay), 0.5);
+    --color-overlay6: rgba(var(--color-overlay), 0.6);
+    --color-overlay7: rgba(var(--color-overlay), 0.7);
+    --color-overlay8: rgba(var(--color-overlay), 0.8);
+    --color-overlay9: rgba(var(--color-overlay), 0.9);
+    --color-surface: #ffffff;
+    --color-error: #b00020;
+    --color-on-primary: #ffffff;
+    --color-on-secondary: #000000;
+    --color-on-background: #000000;
+    --color-on-surface: #000000;
+    --color-on-error: #ffffff;
 }
 ::-webkit-scrollbar {
     width: 10px;
@@ -51,6 +74,7 @@ body {
     cursor: default;
     overflow: hidden;
     font-size: 17px;
+    transition: all 0.2s;
     button {
         color: inherit;
         background: none;
@@ -62,6 +86,10 @@ body {
         align-items: center;
         justify-content: center;
         cursor: pointer;
+        transition: all 0.1s;
+        svg {
+            fill: var(--color-on-background);
+        }
         &:hover {
             background-color: var(--color-overlay3);
         }
@@ -76,7 +104,7 @@ body {
         font-size: inherit;
         font-family: inherit;
         &:focus {
-            background-color: var(--color-overlay2);
+            background-color: var(--color-overlay3);
             outline: 1px solid var(--color-overlay4);
         }
     }
@@ -108,6 +136,7 @@ body {
                 height: 25px;
                 border-radius: 2px;
                 background: none;
+                transition: all 0.2s;
                 border: 1px solid var(--color-overlay2);
                 .check {
                     display: none;
@@ -130,6 +159,12 @@ body {
             flex-direction: row;
             align-items: center;
             border-bottom: 1px solid var(--color-overlay3);
+            input {
+                background: var(--color-overlay1);
+                &:focus {
+                    background-color: var(--color-overlay2);
+                }
+            }
             .goback {
                 margin-right: 10px;
             }
@@ -187,6 +222,7 @@ body {
                 flex-direction: row;
                 border-radius: 2px;
                 background-color: var(--color-overlay4);
+                transition: all 0.1s;
                 .options {
                     display: flex;
                     flex-direction: row;
@@ -219,6 +255,16 @@ body {
                 text-decoration: none;
                 padding: 5px;
                 background-color: var(--color-overlay1);
+                transition: all 0.2s;
+                &.noImg {
+                    grid-template-columns: auto 40px;
+                    .cover {
+                        display: none;
+                    }
+                    .info {
+                        margin-left: 20px;
+                    }
+                }
                 &.collectionContentItem {
                     cursor: pointer;
                 }
@@ -245,6 +291,13 @@ body {
                     overflow: hidden;
                     margin-right: 10px;
                     background-color: var(--color-overlay3);
+                    img {
+                        max-width: 100%;
+                        position: relative;
+                        top: 50%;
+                        transform: translate(-50%, -50%);
+                        left: 50%;
+                    }
                 }
                 .info {
                     display: flex;
@@ -309,6 +362,7 @@ body {
                     flex-direction: row;
                     .warn {
                         &:hover {
+                            color: var(--color-on-error);
                             background: var(--color-error);
                         }
                     }
