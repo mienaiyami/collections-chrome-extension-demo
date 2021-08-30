@@ -42,14 +42,14 @@ const CollectionContentItem = ({
             data-checked={checkboxState}
             onClick={() => {
                 /* eslint-disable */
-                chrome.tabs.update({ imgUrl: href });
+                chrome.tabs.update({ url: href });
                 /* eslint-enable */
             }}
             onMouseDown={(e) => {
                 if (e.button === 1)
                     /* eslint-disable */
                     e.preventDefault();
-                chrome.tabs.create({ imgUrl: href, active: false });
+                chrome.tabs.create({ url: href, active: false });
                 /* eslint-enable */
             }}
             onContextMenu={(e) => {
