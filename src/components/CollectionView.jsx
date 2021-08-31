@@ -109,38 +109,8 @@ const CollectionView = ({
     };
     const addLink = (which, e) => {
         if (which === "current") {
-            //eslint-disable-next-line
-            chrome.tabs
-                .query({
-                    active: true,
-                    currentWindow: true,
-                })
-                .then((tabs) => {
-                    const tab = tabs[0];
-                    addLinkToCollection({
-                        colIndex: isNew ? 0 : currentCollection,
-                        link: tab.url,
-                        title: tab.title,
-                        cover: tab.favIconUrl,
-                    });
-                });
         }
         if (which === "all") {
-            //eslint-disable-next-line
-            chrome.tabs
-                .query({
-                    currentWindow: true,
-                })
-                .then((tabs) => {
-                    for (let i = tabs.length - 1; i >= 0; i--) {
-                        addLinkToCollection({
-                            colIndex: currentCollection,
-                            link: tabs[i].url,
-                            title: tabs[i].title,
-                            cover: tabs[i].favIconUrl,
-                        });
-                    }
-                });
         }
     };
     const linkDrag = (e, index) => {
@@ -311,49 +281,13 @@ const CollectionView = ({
                     >
                         Copy Link
                     </li>
-                    <li
-                        role="button"
-                        onClick={() => {
-                            /* eslint-disable */
-                            if (contextMenuSelectedIndex !== null)
-                                chrome.tabs.create({
-                                    url: collection.content[
-                                        contextMenuSelectedIndex
-                                    ].href,
-                                }); /* eslint-enable */
-                        }}
-                    >
+                    <li role="button" onClick={() => {}}>
                         Open
                     </li>
-                    <li
-                        role="button"
-                        onClick={() => {
-                            /* eslint-disable */
-                            if (contextMenuSelectedIndex !== null)
-                                chrome.windows.create({
-                                    url: collection.content[
-                                        contextMenuSelectedIndex
-                                    ].href,
-                                    state: "maximized",
-                                }); /* eslint-enable */
-                        }}
-                    >
+                    <li role="button" onClick={() => {}}>
                         Open in new window
                     </li>
-                    <li
-                        role="button"
-                        onClick={() => {
-                            /* eslint-disable */
-                            if (contextMenuSelectedIndex !== null)
-                                chrome.windows.create({
-                                    url: collection.content[
-                                        contextMenuSelectedIndex
-                                    ].href,
-                                    state: "maximized",
-                                    incognito: true,
-                                }); /* eslint-enable */
-                        }}
-                    >
+                    <li role="button" onClick={() => {}}>
                         Open in incognito window
                     </li>
                 </div>
@@ -370,41 +304,8 @@ const CollectionView = ({
                             {selectedLink.length} selected
                         </span>
                         <span className="options">
-                            <button
-                                onClick={() => {
-                                    /* eslint-disable */
-                                    let links = collection.content
-                                        .filter((e, i) =>
-                                            selectedLink.includes(i)
-                                        )
-                                        .map((e) => e.href);
-                                    links.forEach((link) => {
-                                        chrome.tabs.create({
-                                            url: link,
-                                            active: false,
-                                        }); /* eslint-enable */
-                                    });
-                                }}
-                            >
-                                Open
-                            </button>
-                            <button
-                                onClick={() => {
-                                    /* eslint-disable */
-                                    let links = collection.content
-                                        .filter((e, i) =>
-                                            selectedLink.includes(i)
-                                        )
-                                        .map((e) => e.href);
-                                    chrome.windows.create({
-                                        url: links,
-                                        state: "maximized",
-                                        incognito: true,
-                                    }); /* eslint-enable */
-                                }}
-                            >
-                                Open Incognito
-                            </button>
+                            <button onClick={() => {}}>Open</button>
+                            <button onClick={() => {}}>Open Incognito</button>
                             <button
                                 onClick={() => {
                                     removeLinkFromCollection(

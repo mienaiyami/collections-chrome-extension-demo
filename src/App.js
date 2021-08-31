@@ -115,26 +115,7 @@ const App = () => {
         data[colIndex].content = newData;
         dataUpdater([...data]);
     };
-    const initNewCollection2 = () => {
-        let content = [];
-        //eslint-disable-next-line
-        chrome.tabs.query({ currentWindow: true }).then((tabs) => {
-            tabs.forEach((e) => {
-                content.push({
-                    type: "link",
-                    href: e.url,
-                    title: e.title,
-                    cover: e.favIconUrl,
-                });
-            });
-            data.unshift({
-                name: new Date().toString().split(" (")[0],
-                cover: "",
-                content,
-            });
-            dataUpdater([...data]);
-        });
-    };
+    const initNewCollection2 = () => {};
     const editCollection = (e) => {
         if (e.type === "rename") {
             data[e.index].name = e.name;

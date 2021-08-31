@@ -46,28 +46,7 @@ const CollectionItem = ({
             }}
         >
             <div className="addCurrent">
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        //eslint-disable-next-line
-                        chrome.tabs
-                            .query({
-                                active: true,
-                                currentWindow: true,
-                            })
-                            .then((tabs) => {
-                                const tab = tabs[0];
-                                addLinkToCollection({
-                                    colIndex: indexNumber,
-                                    link: tab.url,
-                                    title: tab.title,
-                                    cover: tab.favIconUrl,
-                                });
-                            });
-                    }}
-                >
-                    +
-                </button>
+                <button onClick={(e) => {}}>+</button>
             </div>
             <div className="info">
                 <span className="name" title={name}>

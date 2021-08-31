@@ -262,56 +262,13 @@ const Collections = ({
                     >
                         Copy Links(JSON)
                     </li>
-                    <li
-                        role="button"
-                        onClick={() => {
-                            /* eslint-disable */
-                            if (contextMenuSelectedIndex !== null) {
-                                let links = collectionData[
-                                    contextMenuSelectedIndex
-                                ].content.map((e) => e.href);
-                                links.forEach((link) => {
-                                    chrome.tabs.create({
-                                        url: link,
-                                        active: false,
-                                    }); /* eslint-enable */
-                                });
-                            }
-                        }}
-                    >
+                    <li role="button" onClick={() => {}}>
                         Open All
                     </li>
-                    <li
-                        role="button"
-                        onClick={() => {
-                            /* eslint-disable */
-                            let links = collectionData[
-                                contextMenuSelectedIndex
-                            ].content.map((e) => e.href);
-                            if (contextMenuSelectedIndex !== null)
-                                chrome.windows.create({
-                                    url: links,
-                                    state: "maximized",
-                                }); /* eslint-enable */
-                        }}
-                    >
+                    <li role="button" onClick={() => {}}>
                         Open All in new window
                     </li>
-                    <li
-                        role="button"
-                        onClick={() => {
-                            /* eslint-disable */
-                            let links = collectionData[
-                                contextMenuSelectedIndex
-                            ].content.map((e) => e.href);
-                            if (contextMenuSelectedIndex !== null)
-                                chrome.windows.create({
-                                    url: links,
-                                    state: "maximized",
-                                    incognito: true,
-                                }); /* eslint-enable */
-                        }}
-                    >
+                    <li role="button" onClick={() => {}}>
                         Open All in incognito window
                     </li>
                 </div>

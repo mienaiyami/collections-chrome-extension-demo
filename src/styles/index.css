@@ -72,10 +72,16 @@ body.lightTheme {
 
 body {
   position: relative;
+  width: 100vw;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
   font-family: "Roboto", sans-serif;
   background-color: var(--color-background);
   color: var(--color-on-background);
-  width: 450px;
   height: 600px;
   -webkit-user-select: none;
      -moz-user-select: none;
@@ -86,6 +92,21 @@ body {
   font-size: 17px;
   -webkit-transition: all 0.2s;
   transition: all 0.2s;
+}
+
+body a {
+  color: var(--color-on-background);
+}
+
+body a:hover {
+  color: var(--color-primary);
+}
+
+body #info {
+  display: -ms-grid;
+  display: grid;
+  place-items: center;
+  padding: 20px;
 }
 
 body button {
@@ -136,7 +157,7 @@ body input[type="text"]:focus {
 
 body #app {
   position: relative;
-  width: 100%;
+  width: 450px;
   height: 100%;
   display: -webkit-box;
   display: -ms-flexbox;

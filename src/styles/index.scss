@@ -65,16 +65,29 @@ body.lightTheme {
 }
 body {
     position: relative;
+    width: 100vw;
+    display: flex;
+    justify-content: space-between;
     font-family: "Roboto", sans-serif;
     background-color: var(--color-background);
     color: var(--color-on-background);
-    width: 450px;
     height: 600px;
     user-select: none;
     cursor: default;
     overflow: hidden;
     font-size: 17px;
     transition: all 0.2s;
+    a {
+        color: var(--color-on-background);
+        &:hover {
+            color: var(--color-primary);
+        }
+    }
+    #info {
+        display: grid;
+        place-items: center;
+        padding: 20px;
+    }
     button {
         color: inherit;
         background: none;
@@ -110,7 +123,7 @@ body {
     }
     #app {
         position: relative;
-        width: 100%;
+        width: 450px;
         height: 100%;
         display: flex;
         flex-direction: column;

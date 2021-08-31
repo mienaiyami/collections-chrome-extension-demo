@@ -16,28 +16,11 @@ const CollectionContentItem = ({
     const checkboxRef = useRef(null);
     const [checkboxState, checkboxStateUpdater] = useState(false);
     const [cover, coverUpdater] = useState("");
-    const fetchImg = async (url) => {
-        const res = await fetch(url);
-        if (res.ok) {
-            res.text().then((data) => {
-                filterMeta(data).then((imgUrl) => {
-                    if (imgUrl === "") imgUrl = displayImg;
-                    coverUpdater(imgUrl);
-                });
-            });
-        }
-        if (res.status === 429) {
-            setTimeout(() => {
-                fetchImg(url);
-            }, 1000);
-        }
-    };
     useEffect(() => {
         checkboxRef.current.addEventListener("change", (e) => {
             let state = e.target.checked;
             checkboxStateUpdater(state);
         });
-        if (href.startsWith("http")) fetchImg(href);
     }, []);
     useEffect(() => {
         if (checkboxState === true) addToSelected(indexNumber);
@@ -50,17 +33,9 @@ const CollectionContentItem = ({
             tabIndex="0"
             data-index={indexNumber}
             data-checked={checkboxState}
-            onClick={() => {
-                /* eslint-disable */
-                chrome.tabs.update({ url: href });
-                /* eslint-enable */
-            }}
+            onClick={() => {}}
             onMouseDown={(e) => {
                 if (e.button === 1) {
-                    /* eslint-disable */
-                    e.preventDefault();
-                    chrome.tabs.create({ url: href, active: false });
-                    /* eslint-enable */
                 }
             }}
             onContextMenu={(e) => {
