@@ -10,16 +10,16 @@ body.darkTheme {
     --color-primary-variant: #3700b3;
     --color-secondary: #03dac6;
     --color-background: #121212;
-    --color-overlay: 255, 255, 255;
-    --color-overlay1: rgba(var(--color-overlay), 0.1);
-    --color-overlay2: rgba(var(--color-overlay), 0.2);
-    --color-overlay3: rgba(var(--color-overlay), 0.3);
-    --color-overlay4: rgba(var(--color-overlay), 0.4);
-    --color-overlay5: rgba(var(--color-overlay), 0.5);
-    --color-overlay6: rgba(var(--color-overlay), 0.6);
-    --color-overlay7: rgba(var(--color-overlay), 0.7);
-    --color-overlay8: rgba(var(--color-overlay), 0.8);
-    --color-overlay9: rgba(var(--color-overlay), 0.9);
+    --color-overlay: 0, 0%;
+    --color-overlay1: hsl(var(--color-overlay), 10%);
+    --color-overlay2: hsl(var(--color-overlay), 20%);
+    --color-overlay3: hsl(var(--color-overlay), 30%);
+    --color-overlay4: hsl(var(--color-overlay), 40%);
+    --color-overlay5: hsl(var(--color-overlay), 50%);
+    --color-overlay6: hsl(var(--color-overlay), 60%);
+    --color-overlay7: hsl(var(--color-overlay), 70%);
+    --color-overlay8: hsl(var(--color-overlay), 80%);
+    --color-overlay9: hsl(var(--color-overlay), 90%);
     --color-surface: #121212;
     --color-error: #cf6679;
     --color-on-primary: #000000;
@@ -33,16 +33,16 @@ body.lightTheme {
     --color-primary-variant: #3700b3;
     --color-secondary: #03dac6;
     --color-background: #ffffff;
-    --color-overlay: 98, 0, 238;
-    --color-overlay1: rgba(var(--color-overlay), 0.1);
-    --color-overlay2: rgba(var(--color-overlay), 0.2);
-    --color-overlay3: rgba(var(--color-overlay), 0.3);
-    --color-overlay4: rgba(var(--color-overlay), 0.4);
-    --color-overlay5: rgba(var(--color-overlay), 0.5);
-    --color-overlay6: rgba(var(--color-overlay), 0.6);
-    --color-overlay7: rgba(var(--color-overlay), 0.7);
-    --color-overlay8: rgba(var(--color-overlay), 0.8);
-    --color-overlay9: rgba(var(--color-overlay), 0.9);
+    --color-overlay: 265, 100%;
+    --color-overlay1: hsl(var(--color-overlay), 95%);
+    --color-overlay2: hsl(var(--color-overlay), 90%);
+    --color-overlay3: hsl(var(--color-overlay), 85%);
+    --color-overlay4: hsl(var(--color-overlay), 80%);
+    --color-overlay5: hsl(var(--color-overlay), 75%);
+    --color-overlay6: hsl(var(--color-overlay), 70%);
+    --color-overlay7: hsl(var(--color-overlay), 65%);
+    --color-overlay8: hsl(var(--color-overlay), 60%);
+    --color-overlay9: hsl(var(--color-overlay), 55%);
     --color-surface: #ffffff;
     --color-error: #b00020;
     --color-on-primary: #ffffff;
@@ -126,7 +126,7 @@ body {
                 display: none;
             }
             &:hover .inputCheckbox {
-                border: 1px solid var(--color-overlay4);
+                border: 1px solid var(--color-overlay7);
             }
             .inputCheckbox {
                 display: flex;
@@ -137,7 +137,7 @@ body {
                 border-radius: 2px;
                 background: none;
                 transition: all 0.2s;
-                border: 1px solid var(--color-overlay2);
+                border: 1px solid var(--color-overlay3);
                 .check {
                     display: none;
                 }
@@ -187,6 +187,33 @@ body {
             display: flex;
             flex-direction: column;
             align-items: center;
+            .dragIndicator {
+                position: absolute;
+                display: none;
+                width: 100%;
+                top: 0;
+                left: 0;
+                .name {
+                    position: absolute;
+                    background: var(--color-overlay2);
+                    padding: 5px;
+                    border-radius: 5px;
+                    z-index: 2000;
+                    border: 1px solid var(--color-primary);
+                    max-width: 250px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+                .line {
+                    position: absolute;
+                    width: 98%;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    height: 2px;
+                    background-color: var(--color-primary);
+                }
+            }
             .contextMenu {
                 position: fixed;
                 left: 0;
@@ -218,32 +245,44 @@ body {
                     }
                 }
             }
-            .deleteSelected {
-                width: 95%;
-                display: flex;
-                align-items: center;
-                padding: 5px;
-                margin: 3px 0;
-                flex-direction: row;
-                border-radius: 2px;
-                background-color: var(--color-overlay4);
-                transition: all 0.1s;
-                .options {
-                    display: flex;
-                    flex-direction: row;
-                    margin-left: auto;
-                }
-            }
-            .createNew {
-                width: 100%;
+            .collectionOptions {
+                display: grid;
+                place-items: center;
+                position: sticky;
+                top: 0;
+                z-index: 1000;
                 height: 50px;
-                display: flex;
-                align-self: stretch;
-                justify-self: stretch;
-                flex-direction: row;
-                > button {
-                    width: 50%;
-                    height: 50px;
+                width: 100%;
+                padding: 5px 5px;
+                background: var(--color-background);
+                .deleteSelected {
+                    width: 100%;
+                    display: flex;
+                    padding: 0 5px;
+                    align-items: center;
+                    height: 100%;
+                    flex-direction: row;
+                    border-radius: 2px;
+                    background-color: var(--color-overlay4);
+                    transition: all 0.1s;
+                    z-index: 1000;
+                    .options {
+                        display: flex;
+                        flex-direction: row;
+                        margin-left: auto;
+                    }
+                }
+                .createNew {
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    align-self: stretch;
+                    justify-self: stretch;
+                    flex-direction: row;
+                    > button {
+                        width: 50%;
+                        height: 100%;
+                    }
                 }
             }
             .collectionItem {
@@ -253,7 +292,7 @@ body {
                 display: grid;
                 cursor: default;
                 column-gap: 10px;
-                grid-template-columns: 80px auto 40px;
+                grid-template-columns: 50px auto 40px;
                 overflow: hidden;
                 align-items: center;
                 color: inherit;
@@ -261,23 +300,30 @@ body {
                 padding: 5px;
                 background-color: var(--color-overlay1);
                 transition: all 0.2s;
-                &.noImg {
-                    grid-template-columns: auto 40px;
-                    .cover {
-                        display: none;
-                    }
-                    .info {
-                        margin-left: 20px;
-                    }
-                }
                 &.collectionContentItem {
                     cursor: pointer;
+                    grid-template-columns: 80px auto 40px;
+                    .cover {
+                        height: 100%;
+                        border-radius: 3px;
+                        width: 100%;
+                        overflow: hidden;
+                        margin-right: 10px;
+                        background-color: var(--color-overlay3);
+                        img {
+                            max-width: 100%;
+                            position: relative;
+                            top: 50%;
+                            transform: translate(-50%, -50%);
+                            left: 50%;
+                        }
+                    }
                 }
                 &:hover {
                     background-color: var(--color-overlay2);
                 }
                 &:active {
-                    background-color: var(--color-overlay5);
+                    background-color: var(--color-overlay3);
                 }
                 &[data-checked="true"] {
                     background-color: var(--color-overlay1);
@@ -289,19 +335,14 @@ body {
                         background-color: var(--color-overlay5);
                     }
                 }
-                .cover {
-                    height: 100%;
-                    border-radius: 3px;
+                .addCurrent {
                     width: 100%;
+                    aspect-ratio: 1 / 1;
                     overflow: hidden;
                     margin-right: 10px;
-                    background-color: var(--color-overlay3);
-                    img {
-                        max-width: 100%;
-                        position: relative;
-                        top: 50%;
-                        transform: translate(-50%, -50%);
-                        left: 50%;
+                    button {
+                        height: 100%;
+                        width: 100%;
                     }
                 }
                 .info {
@@ -349,7 +390,7 @@ body {
             width: 100%;
             height: 100%;
             z-index: 9999;
-            background-color: var(--color-overlay1);
+            background-color: hsl(var(--color-overlay), 10%, 0.5);
             display: grid;
             place-items: center;
             .prompt {

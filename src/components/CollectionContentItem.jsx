@@ -11,24 +11,33 @@ const CollectionContentItem = ({
     removeFromSelected,
     indexNumber,
     filterMeta,
+    onLinkDrag,
 }) => {
     const checkboxRef = useRef(null);
     const [checkboxState, checkboxStateUpdater] = useState(false);
     const [cover, coverUpdater] = useState("");
+    const fetchImg = async (url) => {
+        const res = await fetch(url);
+        if (res.ok) {
+            res.text().then((data) => {
+                filterMeta(data).then((imgUrl) => {
+                    if (imgUrl === "") imgUrl = displayImg;
+                    coverUpdater(imgUrl);
+                });
+            });
+        }
+        if (res.status === 429) {
+            setTimeout(() => {
+                fetchImg(url);
+            }, 1000);
+        }
+    };
     useEffect(() => {
         checkboxRef.current.addEventListener("change", (e) => {
             let state = e.target.checked;
             checkboxStateUpdater(state);
         });
-        if (href.startsWith("http"))
-            fetch(href)
-                .then((raw) => raw.text())
-                .then((data) => {
-                    filterMeta(data).then((imgUrl) => {
-                        if (imgUrl === "") imgUrl = displayImg;
-                        coverUpdater(imgUrl);
-                    });
-                });
+        if (href.startsWith("http")) fetchImg(href);
     }, []);
     useEffect(() => {
         if (checkboxState === true) addToSelected(indexNumber);
@@ -39,6 +48,7 @@ const CollectionContentItem = ({
         <div
             className="collectionContentItem collectionItem"
             tabIndex="0"
+            data-index={indexNumber}
             data-checked={checkboxState}
             onClick={() => {
                 /* eslint-disable */
@@ -46,14 +56,20 @@ const CollectionContentItem = ({
                 /* eslint-enable */
             }}
             onMouseDown={(e) => {
-                if (e.button === 1)
+                if (e.button === 1) {
                     /* eslint-disable */
                     e.preventDefault();
-                chrome.tabs.create({ url: href, active: false });
-                /* eslint-enable */
+                    chrome.tabs.create({ url: href, active: false });
+                    /* eslint-enable */
+                }
             }}
             onContextMenu={(e) => {
                 linkContextMenu(e, indexNumber);
+            }}
+            draggable
+            onDragStart={(e) => {
+                e.preventDefault();
+                onLinkDrag(e, indexNumber);
             }}
         >
             <div className="cover">
@@ -68,23 +84,6 @@ const CollectionContentItem = ({
                 </span>
             </div>
             <div className="options">
-                {/* <button
-                    onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        removeLinkFromCollection(currentCollection, indexNumber);
-                    }}
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        height="24px"
-                        viewBox="0 0 24 24"
-                        width="24px"
-                        fill="#FFFFFF"
-                    >
-                        <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
-                    </svg>
-                </button> */}
                 <CheckBox ref={checkboxRef} />
             </div>
         </div>

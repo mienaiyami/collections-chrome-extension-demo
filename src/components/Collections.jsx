@@ -5,19 +5,23 @@ import TopBar from "./TopBar";
 const Collections = ({
     collectionData,
     removeCollections,
+    changeCollectionIndex,
     currentCollectionUpdater,
     newCollection1,
     newCollection2,
+    addLinkToCollection,
     theme,
     themeUpdater,
 }) => {
-    const openCollection = (index) => {
-        currentCollectionUpdater(index);
-    };
     const mainContRef = useRef(null);
     const collectionRef = useRef(null);
     const contextMenu = useRef(null);
+    const dragIndicatorRef = useRef(null);
     const [contextMenuState, contextMenuStateUpdater] = useState("closed");
+    const [isDragging, isDraggingUpdater] = useState(false);
+    const [draggingIndex, draggingIndexUpdater] = useState(null);
+    const [draggingOverIndex, draggingOverIndexUpdater] = useState(null);
+    const [canOpenCollection, canOpenCollectionUpdater] = useState(true);
     const [contextMenuSelectedIndex, contextMenuSelectedIndexUpdater] =
         useState(null);
     const collectionContextMenu = (e, index) => {
@@ -42,6 +46,11 @@ const Collections = ({
             contextMenu.current.style.top = y + "px";
         }
         contextMenuStateUpdater("opened");
+    };
+    const openCollection = (index) => {
+        if (!isDragging && canOpenCollection) {
+            currentCollectionUpdater(index);
+        }
     };
     const [selectedCollection, selectedCollectionUpdater] = useState([]);
     const addToSelected = (index) => {
@@ -107,6 +116,109 @@ const Collections = ({
             </div>
         );
     };
+    const collectionDrag = (e, index) => {
+        isDraggingUpdater(true);
+        draggingIndexUpdater(index);
+        dragIndicatorRef.current.style.display = "flex";
+        const nameElem = dragIndicatorRef.current.querySelector(".name");
+        nameElem.innerHTML = collectionData[index].name;
+        if (
+            e.pageX - mainContRef.current.offsetLeft >=
+            mainContRef.current.offsetWidth - nameElem.offsetWidth - 20
+        ) {
+            nameElem.style.left =
+                mainContRef.current.offsetWidth -
+                nameElem.offsetWidth -
+                20 +
+                "px";
+        } else {
+            nameElem.style.left =
+                e.pageX - mainContRef.current.offsetLeft + 20 + "px";
+        }
+        nameElem.style.top =
+            e.pageY - mainContRef.current.offsetTop + 20 + "px";
+        const lineElem = dragIndicatorRef.current.querySelector(".line");
+        lineElem.style.top =
+            collectionRef.current.offsetTop +
+            collectionRef.current.children[index].offsetTop -
+            5 +
+            "px";
+    };
+    const getcollectionItem = (elem) => {
+        let parent = elem.parentElement;
+        if (
+            !parent.classList.contains("collectionItem") &&
+            !["collections", "main", "app"].includes(parent.id) &&
+            parent !== document.body
+        ) {
+            parent = getcollectionItem(parent);
+        }
+        return parent;
+    };
+    const collectionDragging = (e) => {
+        const nameElem = dragIndicatorRef.current.querySelector(".name");
+        if (
+            e.pageX - mainContRef.current.offsetLeft >=
+            mainContRef.current.offsetWidth - nameElem.offsetWidth - 40
+        ) {
+            nameElem.style.left =
+                mainContRef.current.offsetWidth -
+                nameElem.offsetWidth -
+                20 +
+                "px";
+        } else {
+            nameElem.style.left =
+                e.pageX - mainContRef.current.offsetLeft + 20 + "px";
+        }
+        nameElem.style.top =
+            e.pageY - mainContRef.current.offsetTop + 20 + "px";
+        const lineElem = dragIndicatorRef.current.querySelector(".line");
+        const elemUnderMouse = document.elementFromPoint(e.pageX, e.pageY);
+        let index = draggingOverIndex;
+        if (
+            !elemUnderMouse?.classList?.contains("collectionItem") &&
+            elemUnderMouse !== collectionRef.current &&
+            elemUnderMouse !== dragIndicatorRef.current &&
+            elemUnderMouse !== nameElem &&
+            elemUnderMouse !== lineElem
+        ) {
+            index = parseInt(
+                getcollectionItem(elemUnderMouse).getAttribute("data-index")
+            );
+        }
+        if (elemUnderMouse?.classList?.contains("collectionItem"))
+            index = parseInt(elemUnderMouse.getAttribute("data-index"));
+        if (index !== null && !isNaN(index)) {
+            draggingOverIndexUpdater(parseInt(index));
+            lineElem.style.top =
+                collectionRef.current.children[index].offsetTop +
+                collectionRef.current.offsetTop -
+                5 +
+                "px";
+        }
+    };
+    const collectionDragEnd = (e) => {
+        dragIndicatorRef.current.style.display = "none";
+        const nameElem = dragIndicatorRef.current.querySelector(".name");
+        nameElem.innerHTML = "";
+        if (draggingIndex !== draggingOverIndex)
+            changeCollectionIndex(draggingIndex, draggingOverIndex);
+        isDraggingUpdater(false);
+        draggingIndexUpdater(null);
+        draggingOverIndexUpdater(null);
+        canOpenCollectionUpdater(false);
+        setTimeout(() => {
+            canOpenCollectionUpdater(true);
+        }, 500);
+    };
+    const cancelDrag = () => {
+        dragIndicatorRef.current.style.display = "none";
+        const nameElem = dragIndicatorRef.current.querySelector(".name");
+        nameElem.innerHTML = "";
+        isDraggingUpdater(false);
+        draggingIndexUpdater(null);
+        draggingOverIndexUpdater(null);
+    };
     return (
         <>
             <TopBar
@@ -117,6 +229,10 @@ const Collections = ({
                 themeUpdater={themeUpdater}
             />
             <div id="main" ref={mainContRef}>
+                <div className="dragIndicator" ref={dragIndicatorRef}>
+                    <span className="name"></span>
+                    <span className="line"></span>
+                </div>
                 <div
                     className="contextMenu"
                     ref={contextMenu}
@@ -199,75 +315,94 @@ const Collections = ({
                         Open All in incognito window
                     </li>
                 </div>
-                <div
-                    className="deleteSelected"
-                    style={
-                        selectedCollection.length === 0
-                            ? { display: "none" }
-                            : { display: "flex" }
-                    }
-                >
-                    <span className="selectedInfo">
-                        {selectedCollection.length} selected
-                    </span>
-                    <span className="options">
-                        <button
-                            onClick={() => {
-                                // removeCollections(selectedCollection);
-                                // deSelectAll();
-                                promptConfirm(
-                                    "Are you sure you want to delete " +
-                                        selectedCollection.length +
-                                        " collections",
-                                    () => {
-                                        removeCollections(selectedCollection);
-                                        deSelectAll();
-                                    }
-                                );
-                            }}
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                height="24px"
-                                viewBox="0 0 24 24"
-                                width="24px"
-                                fill="#FFFFFF"
+                <div className="collectionOptions">
+                    <div
+                        className="deleteSelected"
+                        style={
+                            selectedCollection.length === 0
+                                ? { display: "none" }
+                                : { display: "flex" }
+                        }
+                    >
+                        <span className="selectedInfo">
+                            {selectedCollection.length} selected
+                        </span>
+                        <span className="options">
+                            <button
+                                onClick={() => {
+                                    // removeCollections(selectedCollection);
+                                    // deSelectAll();
+                                    promptConfirm(
+                                        "Are you sure you want to delete " +
+                                            selectedCollection.length +
+                                            " collections",
+                                        () => {
+                                            removeCollections(
+                                                selectedCollection
+                                            );
+                                            deSelectAll();
+                                        }
+                                    );
+                                }}
                             >
-                                <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
-                            </svg>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    height="24px"
+                                    viewBox="0 0 24 24"
+                                    width="24px"
+                                    fill="#FFFFFF"
+                                >
+                                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+                                </svg>
+                            </button>
+                            <button onClick={deSelectAll}>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    height="24px"
+                                    viewBox="0 0 24 24"
+                                    width="24px"
+                                    fill="#FFFFFF"
+                                >
+                                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                                </svg>
+                            </button>
+                        </span>
+                    </div>
+                    <div
+                        className="createNew"
+                        style={
+                            selectedCollection.length === 0
+                                ? { display: "flex" }
+                                : { display: "none" }
+                        }
+                    >
+                        <button className="newEmpty" onClick={newCollection1}>
+                            Create New Collection
                         </button>
-                        <button onClick={deSelectAll}>
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                height="24px"
-                                viewBox="0 0 24 24"
-                                width="24px"
-                                fill="#FFFFFF"
-                            >
-                                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-                            </svg>
+                        <button className="newFromAll" onClick={newCollection2}>
+                            Create New Collection from All Opened tabs
                         </button>
-                    </span>
-                </div>
-                <div
-                    className="createNew"
-                    style={
-                        selectedCollection.length === 0
-                            ? { display: "flex" }
-                            : { display: "none" }
-                    }
-                >
-                    <button className="newEmpty" onClick={newCollection1}>
-                        Create New Collection
-                    </button>
-                    <button className="newFromAll" onClick={newCollection2}>
-                        Create New Collection from All Opened tabs
-                    </button>
+                    </div>
                 </div>
                 <div
                     id="collections"
                     ref={collectionRef}
                     className="collection-view"
+                    onMouseMove={(e) => {
+                        if (isDragging && draggingIndex !== null) {
+                            collectionDragging(e);
+                        }
+                    }}
+                    onMouseUp={(e) => {
+                        if (isDragging && draggingIndex !== null) {
+                            collectionDragEnd(e);
+                        }
+                    }}
+                    onMouseLeave={(e) => {
+                        if (isDragging && draggingIndex !== null) {
+                            cancelDrag();
+                        }
+                    }}
                 >
                     {collectionData === null ? (
                         <p>No Collection</p>
@@ -278,11 +413,6 @@ const Collections = ({
                             <CollectionItem
                                 key={e.name + i}
                                 name={e.name}
-                                cover={
-                                    e.content.length !== 0
-                                        ? e.content[0].cover
-                                        : ""
-                                }
                                 total={e.content.length}
                                 indexNumber={i}
                                 openCollection={openCollection}
@@ -290,6 +420,8 @@ const Collections = ({
                                 collectionContextMenu={collectionContextMenu}
                                 addToSelected={addToSelected}
                                 removeFromSelected={removeFromSelected}
+                                addLinkToCollection={addLinkToCollection}
+                                onCollectionDrag={collectionDrag}
                             />
                         ))
                     )}

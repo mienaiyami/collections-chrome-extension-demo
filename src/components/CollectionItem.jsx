@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import CheckBox from "./CheckBox";
 
 const CollectionItem = ({
-    cover,
     name,
     total,
     openCollection,
@@ -10,6 +9,8 @@ const CollectionItem = ({
     collectionContextMenu,
     addToSelected,
     removeFromSelected,
+    addLinkToCollection,
+    onCollectionDrag,
     indexNumber,
 }) => {
     const checkboxRef = useRef(null);
@@ -27,17 +28,46 @@ const CollectionItem = ({
     }, [checkboxState]);
     return (
         <div
-            className="collectionItem noImg"
+            className="collectionItem"
             data-checked={checkboxState}
             tabIndex="0"
-            onClick={() => openCollection(indexNumber)}
+            data-index={indexNumber}
+            onClick={() => {
+                openCollection(indexNumber);
+            }}
             onContextMenu={(e) => {
                 e.preventDefault();
                 collectionContextMenu(e, indexNumber);
             }}
+            draggable
+            onDragStart={(e) => {
+                e.preventDefault();
+                onCollectionDrag(e, indexNumber);
+            }}
         >
-            <div className="cover">
-                <img src={cover || ""} alt="Img" />
+            <div className="addCurrent">
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        //eslint-disable-next-line
+                        chrome.tabs
+                            .query({
+                                active: true,
+                                currentWindow: true,
+                            })
+                            .then((tabs) => {
+                                const tab = tabs[0];
+                                addLinkToCollection({
+                                    colIndex: indexNumber,
+                                    link: tab.url,
+                                    title: tab.title,
+                                    cover: tab.favIconUrl,
+                                });
+                            });
+                    }}
+                >
+                    +
+                </button>
             </div>
             <div className="info">
                 <span className="name" title={name}>
@@ -52,23 +82,6 @@ const CollectionItem = ({
                 </span>
             </div>
             <div className="options">
-                {/* <button
-                    onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        removeCollection(indexNumber);
-                    }}
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        height="24px"
-                        viewBox="0 0 24 24"
-                        width="24px"
-                        fill="#FFFFFF"
-                    >
-                        <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
-                    </svg>
-                </button> */}
                 <CheckBox ref={checkboxRef} />
             </div>
         </div>

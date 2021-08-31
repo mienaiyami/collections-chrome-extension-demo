@@ -102,6 +102,19 @@ const App = () => {
         });
         dataUpdater(newData);
     };
+    const changeCollectionIndex = (index1, index2) => {
+        let newData = [...data];
+        newData.splice(index1, 1);
+        newData.splice(index2, 0, data[index1]);
+        dataUpdater(newData);
+    };
+    const changeLinkIndex = (colIndex, index1, index2) => {
+        let newData = [...data[colIndex].content];
+        newData.splice(index1, 1);
+        newData.splice(index2, 0, data[colIndex].content[index1]);
+        data[colIndex].content = newData;
+        dataUpdater([...data]);
+    };
     const initNewCollection2 = () => {
         let content = [];
         //eslint-disable-next-line
@@ -115,7 +128,7 @@ const App = () => {
                 });
             });
             data.unshift({
-                name: new Date().toUTCString(),
+                name: new Date().toString().split(" (")[0],
                 cover: "",
                 content,
             });
@@ -124,17 +137,8 @@ const App = () => {
     };
     const editCollection = (e) => {
         if (e.type === "rename") {
-            // let index;
-            // let occ = 0;
-            // data.forEach((i, j) => {
-            //     if (i.name === e.oldName) {
-            //         index = j;
-            //         occ++;
-            //     }
-            // });
-            // if (occ > 1) return;
             data[e.index].name = e.name;
-            dataUpdater(data);
+            dataUpdater([...data]);
         }
     };
     return (
@@ -161,8 +165,10 @@ const App = () => {
                     newCollection1={initNewCollection1}
                     newCollection2={initNewCollection2}
                     currentCollectionUpdater={currentCollectionUpdater}
+                    addLinkToCollection={addLinkToCollection}
                     removeCollections={removeCollections}
                     theme={theme}
+                    changeCollectionIndex={changeCollectionIndex}
                     themeUpdater={themeUpdater}
                 />
             ) : (
@@ -179,6 +185,7 @@ const App = () => {
                     removeLinkFromCollection={removeLinkFromCollection}
                     theme={theme}
                     themeUpdater={themeUpdater}
+                    changeLinkIndex={changeLinkIndex}
                 />
             )}
         </>
