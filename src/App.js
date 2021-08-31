@@ -9,24 +9,9 @@ const App = () => {
     const [theme, themeUpdater] = useState("dark");
     /* eslint-disable */
     useEffect(() => {
-        if (isDev) {
-            import("./testdata").then((e) => {
-                dataUpdater(e.default);
-            });
-        } else {
-            chrome.storage.local.get("collections", ({ collections }) => {
-                if (collections === undefined) {
-                    dataUpdater([]);
-                    chrome.storage.local.set({ collections: [] }, () => {});
-                } else dataUpdater(collections);
-            });
-            chrome.storage.local.get("theme", ({ theme }) => {
-                if (theme === undefined) {
-                    themeUpdater("dark");
-                    chrome.storage.local.set({ theme: "dark" }, () => {});
-                } else themeUpdater(theme);
-            });
-        }
+        import("./testdata").then((e) => {
+            dataUpdater(e.default);
+        });
         document.getElementById("app").oncontextmenu = (e) => {
             e.preventDefault();
         };
@@ -54,13 +39,7 @@ const App = () => {
         const updatedData = [newData, ...data];
         dataUpdater(updatedData);
     };
-    useEffect(() => {
-        if (!isDev) {
-            /* eslint-disable */
-            chrome.storage.local.set({ collections: data });
-            /* eslint-enable */
-        }
-    }, [data]);
+    useEffect(() => {}, [data]);
     useEffect(() => {
         if (theme === "dark") {
             document.body.classList.remove("lightTheme");
@@ -69,11 +48,6 @@ const App = () => {
         if (theme === "light") {
             document.body.classList.remove("darkTheme");
             document.body.classList.add("lightTheme");
-        }
-        if (!isDev) {
-            /* eslint-disable */
-            chrome.storage.local.set({ theme });
-            /* eslint-enable */
         }
     }, [theme]);
     const addLinkToCollection = ({ colIndex, link, title, cover }) => {
