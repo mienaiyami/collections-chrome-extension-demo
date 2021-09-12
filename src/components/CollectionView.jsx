@@ -133,7 +133,11 @@ const CollectionView = ({
                 e.pageX - mainContRef.current.offsetLeft + 20 + "px";
         }
         nameElem.style.top =
-            e.pageY - mainContRef.current.offsetTop + 20 + "px";
+            e.pageY -
+            mainContRef.current.offsetTop +
+            mainContRef.current.scrollTop +
+            -40 +
+            "px";
         const lineElem = dragIndicatorRef.current.querySelector(".line");
         lineElem.style.top =
             collectionViewRef.current.offsetTop +
@@ -168,7 +172,11 @@ const CollectionView = ({
                 e.pageX - mainContRef.current.offsetLeft + 20 + "px";
         }
         nameElem.style.top =
-            e.pageY - mainContRef.current.offsetTop + 20 + "px";
+            e.pageY -
+            mainContRef.current.offsetTop +
+            mainContRef.current.scrollTop +
+            -40 +
+            "px";
         const lineElem = dragIndicatorRef.current.querySelector(".line");
         const elemUnderMouse = document.elementFromPoint(e.pageX, e.pageY);
         let index = draggingOverIndex;
@@ -305,7 +313,8 @@ const CollectionView = ({
                         </span>
                         <span className="options">
                             <button onClick={() => {}}>Open</button>
-                            <button onClick={() => {}}>Open Incognito</button>
+                            <button onClick={() => {}}>New Window</button>
+                            <button onClick={() => {}}>Incognito</button>
                             <button
                                 onClick={() => {
                                     removeLinkFromCollection(
